@@ -213,7 +213,7 @@ def get_doc(doc_id, df):
     return sentence_str
 
 #------------------------------------------------------------------------------------------
-data_name = "dev" # dev  test
+data_name = "dev" # dev  test train_annotated
 #------------------------------------------------------------------------------------------
 
 
@@ -268,8 +268,12 @@ for data in entity_information_objects:
     entity_information_list[title][entity] = response
 
 
-file_path = f"../data/check_result_multiple_choice_jsonl/{data_name}/result_docred_{data_name}_multiple_choice_path-k20_0-{docred_len}.jsonl"
-jsonl_data = read_jsonl(file_path)
+if data_name == "train_annotated" or data_name == "train":
+    file_path = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}.jsonl"
+    jsonl_data = read_jsonl(file_path)
+else:
+    file_path = f"../data/check_result_multiple_choice_jsonl/{data_name}/result_docred_{data_name}_multiple_choice_path-k20_0-{docred_len}.jsonl"
+    jsonl_data = read_jsonl(file_path)
 
 save_list = []
 
@@ -295,12 +299,23 @@ for id in range(start, length):
     len_rel = len(prompt_rel)
     rel_list = []
     limit = 0.0
-    for rel_id in range(len_rel):
-        rel = prompt_rel[rel_id]
-        op = chr(65 + cnt)
-        if op in response:
+
+    if data_name == "train_annotated" or data_name == "train":
+        label_list = docred_df['labels'][doc_id]
+        for label in label_list:
+            if label['h'] == entity_h_id and label['t'] == entity_t_id:
+                if rel_info[label['r']] not in prompt_rel:
+                    prompt_rel.append(rel_info[label['r']])
+        for rel_id in range(len_rel):
+            rel = prompt_rel[rel_id]
             rel_list.append(rel)
-        cnt += 1
+    else:
+        for rel_id in range(len_rel):
+            rel = prompt_rel[rel_id]
+            op = chr(65 + cnt)
+            if op in response:
+                rel_list.append(rel)
+            cnt += 1
 
 
     if entity_h in entity_information_list[title]:
