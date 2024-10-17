@@ -125,9 +125,7 @@ def run_list(prompt_list):
     return response_list_run
 
 
-
 now = datetime.now()
-
 formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
 print("The start time is:", formatted_time)
 
@@ -136,9 +134,7 @@ data_name = "dev" # test dev
 #------------------------------------------------------------------------------------------
 
 file_path = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}.jsonl"
-
 save_doc_name = "path-k20"
-
 jsonl_data = read_jsonl(file_path)
 
 len_data = len(jsonl_data)
@@ -200,8 +196,6 @@ for id in range(start, end):
     prompt_list.append(prompt)
     id_list.append(id)
     save_cnt += 1
-
-
 
 
 if len(prompt_list) > 0:
