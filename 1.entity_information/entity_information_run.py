@@ -64,13 +64,13 @@ def run_one(prompt):
         result_response = result_response_2.replace("<|start_header_id|>assistant<|end_header_id|>", "", 1)
 
         result_response_unique = result_response.strip()
-        #
+        
         return result_response_unique
 
 def run_list(prompt_list):
     system_prompt = ""
     message = prompt_list
-    temperature = 0.9#2.0
+    temperature = 0.9
     max_new_tokens = 50
 
     data = {}
@@ -118,7 +118,7 @@ def run_list(prompt_list):
             result_response_unique = result_response.strip()
 
             response_list_run.append(result_response_unique)
-    #
+    
     return response_list_run
 
 
