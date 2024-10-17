@@ -43,7 +43,7 @@ save_list = []
 
 for jsonl_id in range(start, end):
 
-    jsonl_file_path = f"../data/entity_pair_selection_run/{data_name}/result_docred_{data_name}_entity_pair_selection-{save_doc_name}_{jsonl_id}.jsonl" # 你的JSONL文件路径
+    jsonl_file_path = f"../data/entity_pair_selection_run/{data_name}/result_docred_{data_name}_entity_pair_selection-{save_doc_name}_{jsonl_id}.jsonl"
     jsonl_data = read_jsonl(jsonl_file_path)
 
     for item in jsonl_data:
