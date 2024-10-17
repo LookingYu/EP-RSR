@@ -127,7 +127,7 @@ def run_list(prompt_list):
 
 
 now = datetime.now()
-# 格式化时间为字符串
+
 formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
 print("The start time is:", formatted_time)
 
