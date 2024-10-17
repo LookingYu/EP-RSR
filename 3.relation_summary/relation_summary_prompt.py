@@ -152,4 +152,4 @@ for doc_id in range(start, docred_len):
 jsonl_file = f"../data/relation_summary_prompt/{data_name}/result_docred_{data_name}_doc0-{docred_len}.jsonl"
 
 save_to_jsonl(final_list, jsonl_file)
-print(f"文档的结果转换完毕，结果保存在{jsonl_file}")
+print(f"The result is saved in the file {jsonl_file}")
