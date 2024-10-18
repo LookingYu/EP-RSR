@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import csv
 import json
-import pickle
 
 def get_rel_template(rel, entity_h, entity_t, reverse_rel_info ,rel2temp):
     if rel != "no_relation":
@@ -38,7 +37,6 @@ def get_entity_id(entity, df, doc_id):
                 return entity_id
 
     return -1
-
 
 
 data_name = "train_annotated"

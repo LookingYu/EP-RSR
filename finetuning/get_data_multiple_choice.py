@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import csv
 import json
-import pickle
 
 def read_jsonl(file_path):
     data = []
@@ -15,7 +14,6 @@ def get_docid(title, df):
     for doc_id in range(len(df)):
         if title == df['title'][doc_id]:
             return doc_id
-
 
 data_name = "train_annotated"
 
