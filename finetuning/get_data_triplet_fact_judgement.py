@@ -16,9 +16,11 @@ def get_docid(title, df):
         if title == df['title'][doc_id]:
             return doc_id
 
+
 #------------------------------------------------------------------------------------------
 data_name = "train_annotated" # dev  test train_annotated
 #------------------------------------------------------------------------------------------
+
 doc_dir = '../data/redocred/'
 doc_filename = f"{doc_dir}{data_name}.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
@@ -78,7 +80,6 @@ for data in rel_objects:
     save_dict["input"] = inputs
     save_dict["output"] = output
     save_list.append(save_dict)
-
 
 
 

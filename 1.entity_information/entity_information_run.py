@@ -39,13 +39,10 @@ def run_one(prompt):
         json.dump(data, f, ensure_ascii=False)
     remote_path = "local_prompt.json"
 
-
     final_command = f'curl -X POST "http://127.0.0.1:6006" -H \'Content-Type: application/json\' -d@\'{remote_path}\' '
-
 
     result = subprocess.run(final_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     result_list = result.stdout
-
 
     if result_list == "Internal Server Error":
         return ""
@@ -79,15 +76,12 @@ def run_list(prompt_list):
     data["temperature"] = temperature
     data["max_new_tokens"] = max_new_tokens
 
-
     local_file = "local_prompt.json"
     with open(local_file, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
     remote_path = "local_prompt.json"
 
-
     final_command = f'curl -X POST "http://127.0.0.1:6006" -H \'Content-Type: application/json\' -d@\'{remote_path}\' '
-
 
     result = subprocess.run(final_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     result_list = result.stdout

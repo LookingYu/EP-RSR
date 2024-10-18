@@ -108,7 +108,6 @@ def get_evidence(doc_id, entity_h, entity_h_id, entity_t, entity_t_id, df):
     return sentence_str_all
 
 
-
 def read_list_text_file_to_list(file_path):
 
     text_data = []

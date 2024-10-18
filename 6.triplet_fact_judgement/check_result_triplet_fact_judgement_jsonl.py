@@ -63,6 +63,7 @@ for jsonl_id in range(start, end):
             data_dict["response"] = item["response"]
             save_list.append(data_dict)
 
+
 save_path = f"../data/check_result_triplet_fact_judgement_jsonl/{data_name}/result_docred_{data_name}_triplet_fact_judgement_0-{docred_len}-{save_doc_name}.jsonl"
 save_to_jsonl(save_list, save_path)
 print(f"The result is saved in the file {save_path}")

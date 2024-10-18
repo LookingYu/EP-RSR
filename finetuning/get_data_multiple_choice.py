@@ -19,6 +19,7 @@ def get_docid(title, df):
 #------------------------------------------------------------------------------------------
 data_name = "train_annotated" # dev  test train_annotated
 #------------------------------------------------------------------------------------------
+
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
@@ -31,7 +32,6 @@ rel_info = info_fr.read()
 rel_info = eval(rel_info)
 
 reverse_rel_info = {v: k for k, v in rel_info.items()}
-
 
 
 rel_objects = read_jsonl(f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}.jsonl")
@@ -56,7 +56,6 @@ for data in rel_objects:
     title = data["title"]
     doc_id = get_docid(title, docred_df)
     label_list = docred_df['labels'][doc_id]
-
 
 
     cnt = 0
@@ -84,7 +83,6 @@ for data in rel_objects:
     save_dict["input"] = inputs
     save_dict["output"] = output
     save_list.append(save_dict)
-
 
 
 

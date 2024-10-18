@@ -105,7 +105,6 @@ def run_list(prompt_list):
 
         for response in result_list:
 
-
             assistant_start_pos = response.find("<|start_header_id|>assistant<|end_header_id|>")
             result_response_1 = response[assistant_start_pos:]
 
@@ -124,7 +123,6 @@ def run_list(prompt_list):
 
 
 now = datetime.now()
-
 formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
 print("The start time is:", formatted_time)
 
@@ -132,8 +130,8 @@ print("The start time is:", formatted_time)
 data_name = "dev" # test dev
 #------------------------------------------------------------------------------------------
 
-file_path = f"../data/triplet_fact_judgement_prompt/{data_name}/triplet_fact_judgement_prompt_{data_name}_k20.jsonl"
 
+file_path = f"../data/triplet_fact_judgement_prompt/{data_name}/triplet_fact_judgement_prompt_{data_name}_k20.jsonl"
 save_doc_name = "k20"
 
 jsonl_data = read_jsonl(file_path)
@@ -222,7 +220,6 @@ if len(prompt_list) > 0:
 
 
 now = datetime.now()
-
 formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
 print("The end time is:", formatted_time)
 

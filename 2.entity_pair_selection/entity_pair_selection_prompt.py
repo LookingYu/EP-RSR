@@ -65,6 +65,7 @@ def get_entity_id(entity, df, doc_id):
 #------------------------------------------------------------------------------------------
 data_name = "dev" # dev  test
 #------------------------------------------------------------------------------------------
+
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')

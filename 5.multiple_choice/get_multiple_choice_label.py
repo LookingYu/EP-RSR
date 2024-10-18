@@ -114,9 +114,7 @@ for id in range(start, length):
             save_list.append(rel_dict)
 
 
-
 unique_save_list = [dict(t) for t in {tuple(d.items()) for d in save_list}]
-
 
 save_name = f"../data/get_multiple_choice_label/{data_name}/docred_{data_name}_multiple_choice_{save_doc_name}_0-{docred_len}_answer.jsonl"
 save_to_jsonl(unique_save_list, save_name)

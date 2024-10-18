@@ -100,7 +100,6 @@ for id in range(start, length):
 
 unique_save_list = [dict(t) for t in {tuple(d.items()) for d in save_list}]
 
-
 save_name = f"../data/get_triplet_fact_judgement_label/{data_name}/docred_{data_name}_triplet_fact_judgement_0-{docred_len}_answer-{save_doc_name}.jsonl"
 save_to_jsonl(unique_save_list, save_name)
 print(f"The result is saved in the file {save_name}")

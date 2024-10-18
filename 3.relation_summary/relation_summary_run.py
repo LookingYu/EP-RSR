@@ -5,7 +5,7 @@ import numpy as np
 import requests
 import re
 import csv
-
+from datetime import datetime
 
 def save_to_jsonl(data, jsonl_file):
     with open(jsonl_file, 'w', encoding='utf-8') as jsonlfile:
@@ -126,18 +126,16 @@ def run_list(prompt_list):
 
     return response_list_run
 
-from datetime import datetime
+
 
 now = datetime.now()
 
 formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
 print("The start time is:", formatted_time)
 
-
 #------------------------------------------------------------------------------------------
 data_name = "dev"    # train_annotated    test      dev
 #------------------------------------------------------------------------------------------
-
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"

@@ -38,6 +38,7 @@ def get_sentence(entity_h, entity_t, entity_h_description, entity_t_description,
 
     return sentence
 
+
 #-----------------------------------------------------------------------------------
 data_name = "dev"  # train_annotated dev test
 #-----------------------------------------------------------------------------------

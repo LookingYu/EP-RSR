@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def get_doc_entitys(doc_id, df):
     entity_list = []
 
@@ -11,7 +12,6 @@ def get_doc_entitys(doc_id, df):
             name_list.append(name)
 
         unique_name_list = list(set(name_list))
-
         entity_list.append(unique_name_list)
 
     return entity_list

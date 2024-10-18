@@ -1,5 +1,4 @@
 import os
-# os.environ['CUDA_VISIBLE_DEVICES'] = "0"
 
 from fastapi import FastAPI, Request
 from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
@@ -11,7 +10,6 @@ device_map = {"": 0}
 
 DEVICE = "cuda"
 DEVICE_ID = "0"
-# CUDA_DEVICE = f"{DEVICE}:{DEVICE_ID}" if DEVICE_ID else DEVICE
 CUDA_DEVICE = "cuda:0"
 
 device = torch.device("cuda:0")
@@ -50,8 +48,6 @@ async def create_item(request: Request):
 
     tokenizer.padding_side = "left"
     tokenizer.pad_token = tokenizer.eos_token
-    # tokenizer.padding_side = "left"
-    # tokenizer.pad_token = "[PAD]"
 
     inputs = tokenizer(inputs_list, return_tensors="pt", padding=True).to(device)
     terminators = [tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids(["<|eot_id|>"])]
@@ -83,14 +79,10 @@ async def create_item(request: Request):
 
 if __name__ == '__main__':
 
-    # model = LlamaForCausalLM.from_pretrained("../../llama3-8b-instruct/", load_in_8bit=False, load_in_4bit=False,
-    #                                          torch_dtype=torch.float16, device_map=device_map)
-    # tokenizer = AutoTokenizer.from_pretrained("../../llama3-8b-instruct/", device_map=device_map)
 
-    model = LlamaForCausalLM.from_pretrained("../finetuning/new_merge_model/", load_in_8bit=False, load_in_4bit=False,
+    model = LlamaForCausalLM.from_pretrained("../model-path/", load_in_8bit=False, load_in_4bit=False,
                                              torch_dtype=torch.float16, device_map=device_map)
-    tokenizer = AutoTokenizer.from_pretrained("../finetuning/new_merge_model/", device_map=device_map)
+    tokenizer = AutoTokenizer.from_pretrained("../model-path/", device_map=device_map)
 
-    # model = model.bfloat16()
     model.eval()
     uvicorn.run(app, host='127.0.0.1', port=6006, workers=1)

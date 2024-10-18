@@ -97,12 +97,6 @@ dev_top_all = {}
 print("data len:", dev_len)
 
 
-now = datetime.now()
-
-formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
-print("The start time is:", formatted_time)
-
-
 for id in range(dev_len):
     print(id)
     query_sentence = dev_jsonl_data[id]['entities_description']
@@ -222,7 +216,7 @@ for key, value in dev_result_rel.items():
 
                 if rel not in predict_rel_list:
                     predict_rel_list[rel] = 1
-                    save_result_rel[key][key_1][key_2].append((rel, value_3)) # (rel, train-data-info)
+                    save_result_rel[key][key_1][key_2].append((rel, value_3))
 
 
 
@@ -246,10 +240,3 @@ for data in dev_jsonl_data:
 save_name = f"../data/retrieval_from_train/{data_name}/path-k20.jsonl"
 save_to_jsonl(save_list, save_name)
 print(f"The result is saved in the file {save_name}")
-
-
-
-now = datetime.now()
-
-formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
-print("The end time is:", formatted_time)

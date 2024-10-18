@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import torch
 
-
 def get_prompt_entity(title, doc, entity):
     prompt = f"""The text is as follows:
 

@@ -115,7 +115,6 @@ save_doc_name = "01-01"
 file_path = f"../data/check_result_entity_pair_selection_jsonl/{data_name}/result_docred_{data_name}_entity_pair_selection_0-{docred_len}-{save_doc_name}.jsonl"
 jsonl_data = read_jsonl(file_path)
 
-
 model = SentenceTransformer('../data/all-mpnet-base')
 
 save_list = []
@@ -184,7 +183,6 @@ for id in range(start, length):
             rel_dict['t_idx'] = entity_h_id
             rel_dict["r"] = "P1"
             save_list.append(rel_dict)
-
 
 
 unique_save_list = [dict(t) for t in {tuple(d.items()) for d in save_list}]

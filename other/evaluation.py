@@ -3,7 +3,7 @@ import os.path
 import json
 import numpy as np
 
-# rel2id = json.load(open('../re_data/redocred/meta/rel2id.json', 'r'))
+
 rel2id = json.load(open('../data/docred/meta/rel2id.json', 'r'))
 id2rel = {value: key for key, value in rel2id.items()}
 
@@ -61,21 +61,15 @@ def gen_train_facts(data_file_name, truth_dir):
 
 
 def official_evaluate(tmp, path):
-    '''
-        Adapted from the official evaluation code
-    '''
     truth_dir = os.path.join(path, 'ref')
 
     if not os.path.exists(truth_dir):
         os.makedirs(truth_dir)
 
     fact_in_train_annotated = gen_train_facts(os.path.join(path, "train_annotated.json"), truth_dir)
-    # fact_in_train_annotated = gen_train_facts(os.path.join(path, "train_revised.json"), truth_dir)
     fact_in_train_distant = gen_train_facts(os.path.join(path, "train_distant.json"), truth_dir)
 
     truth = json.load(open(os.path.join(path, "dev.json")))
-    # truth = json.load(open(os.path.join(path, "dev_revised.json")))
-    # truth = json.load(open(os.path.join(path, "test_revised.json")))
 
     std = {}
     tot_evidences = 0
@@ -174,9 +168,7 @@ def official_evaluate(tmp, path):
         re_f1_ignore_train = 2.0 * re_p_ignore_train * re_r / (re_p_ignore_train + re_r)
 
 
-
     return re_f1, evi_f1, re_f1_ignore_train_annotated, re_f1_ignore_train, re_p, re_r
-
 
 
 def load_json_file(file_path):
