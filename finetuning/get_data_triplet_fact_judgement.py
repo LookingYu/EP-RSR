@@ -17,9 +17,7 @@ def get_docid(title, df):
             return doc_id
 
 
-#------------------------------------------------------------------------------------------
-data_name = "train_annotated" # dev  test train_annotated
-#------------------------------------------------------------------------------------------
+data_name = "train_annotated"
 
 doc_dir = '../data/redocred/'
 doc_filename = f"{doc_dir}{data_name}.json"

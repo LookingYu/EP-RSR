@@ -133,13 +133,11 @@ now = datetime.now()
 formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
 print("The start time is:", formatted_time)
 
-#------------------------------------------------------------------------------------------
-data_name = "dev"    # train_annotated    test      dev
-#------------------------------------------------------------------------------------------
+
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"
-
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
 docred_df = pd.read_json(json_info)

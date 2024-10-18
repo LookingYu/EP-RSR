@@ -45,13 +45,11 @@ def read_jsonl(file_path):
             data.append(json.loads(line))
     return data
 
-#------------------------------------------------------------------------------------------
-data_name = "dev"    # train_annotated    test      dev
-#------------------------------------------------------------------------------------------
+
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"
-
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
 docred_df = pd.read_json(json_info)

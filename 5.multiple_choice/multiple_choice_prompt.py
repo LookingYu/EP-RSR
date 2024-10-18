@@ -156,9 +156,8 @@ def get_doc(doc_id, df):
     return sentence_str
 
 
-#------------------------------------------------------------------------------------------
-data_name = "dev" # dev  test train_annotated
-#------------------------------------------------------------------------------------------
+
+data_name = "dev"
 
 rel_objects = read_jsonl(f"../data/retrieval_from_train/{data_name}/path-k20.jsonl")
 

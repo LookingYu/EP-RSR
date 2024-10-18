@@ -130,9 +130,8 @@ now = datetime.now()
 formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
 print("The start time is:", formatted_time)
 
-#------------------------------------------------------------------------------------------
-data_name = "dev" # test dev
-#------------------------------------------------------------------------------------------
+
+data_name = "dev"
 
 file_path = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}.jsonl"
 save_doc_name = "path-k20"

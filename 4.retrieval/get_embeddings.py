@@ -39,13 +39,11 @@ def get_sentence(entity_h, entity_t, entity_h_description, entity_t_description,
     return sentence
 
 
-#-----------------------------------------------------------------------------------
-data_name = "dev"  # train_annotated dev test
-#-----------------------------------------------------------------------------------
+
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"
-
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
 docred_df = pd.read_json(json_info)

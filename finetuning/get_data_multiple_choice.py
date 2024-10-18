@@ -16,9 +16,8 @@ def get_docid(title, df):
         if title == df['title'][doc_id]:
             return doc_id
 
-#------------------------------------------------------------------------------------------
-data_name = "train_annotated" # dev  test train_annotated
-#------------------------------------------------------------------------------------------
+
+data_name = "train_annotated"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"

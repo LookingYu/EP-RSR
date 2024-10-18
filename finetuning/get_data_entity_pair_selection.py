@@ -40,9 +40,8 @@ def get_entity_id(entity, df, doc_id):
     return -1
 
 
-#------------------------------------------------------------------------------------------
-data_name = "train_annotated" # dev  test train_annotated
-#------------------------------------------------------------------------------------------
+
+data_name = "train_annotated"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"

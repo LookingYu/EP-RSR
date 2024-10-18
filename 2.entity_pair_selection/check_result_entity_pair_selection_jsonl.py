@@ -15,9 +15,8 @@ def save_to_jsonl(data, jsonl_file):
             json.dump(item, jsonlfile)
             jsonlfile.write('\n')
 
-#------------------------------------------------------------------------------------------
-data_name = "dev" # test dev
-#------------------------------------------------------------------------------------------
+
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"

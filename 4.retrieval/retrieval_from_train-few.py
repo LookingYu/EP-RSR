@@ -38,15 +38,11 @@ def judge_example(reverse_rel_info, tain_docred_df, title, rel, train_entity_h_i
 
     return False
 
-#-----------------------------------------------------------------------------------
-data_name = "dev"  # dev test
-#-----------------------------------------------------------------------------------
+
+data_name = "dev"
 
 doc_dir = '../data/docred/'
-
-
 dev_doc_filename = f"{doc_dir}{data_name}.json"
-
 dev_docred_fr = open(dev_doc_filename, 'r', encoding='utf-8')
 dev_json_info = dev_docred_fr.read()
 dev_docred_df = pd.read_json(dev_json_info)

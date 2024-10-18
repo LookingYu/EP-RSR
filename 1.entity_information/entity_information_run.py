@@ -116,13 +116,11 @@ def run_list(prompt_list):
     return response_list_run
 
 
-#------------------------------------------------------------------------------------------
-data_name = "dev" # test dev train_annotated
-#------------------------------------------------------------------------------------------
+
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"
-
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
 docred_df = pd.read_json(json_info)

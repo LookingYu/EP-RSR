@@ -30,13 +30,11 @@ def get_docid(title, df):
         if title == df['title'][doc_id]:
             return doc_id
 
-#------------------------------------------------------------------------------------------
-data_name = "dev"  # train_annotated    test      dev
-#------------------------------------------------------------------------------------------
+
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"
-
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)

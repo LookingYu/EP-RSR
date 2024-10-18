@@ -13,13 +13,11 @@ def save_to_jsonl(data, jsonl_file):
             json.dump(item, jsonlfile, ensure_ascii=False)
             jsonlfile.write('\n')
 
-#------------------------------------------------------------------------------------------
-data_name = "dev"    # train_annotated  test
-#------------------------------------------------------------------------------------------
+
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"
-
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
 docred_df = pd.read_json(json_info)

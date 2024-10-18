@@ -47,10 +47,7 @@ def read_jsonl(file_path):
     return data
 
 
-#------------------------------------------------------------------------------------------
-data_name = "dev" # dev  test
-#------------------------------------------------------------------------------------------
-
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"

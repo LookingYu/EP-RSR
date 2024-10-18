@@ -212,10 +212,8 @@ def get_doc(doc_id, df):
             sentence_str += " "
     return sentence_str
 
-#------------------------------------------------------------------------------------------
-data_name = "dev" # dev  test train_annotated
-#------------------------------------------------------------------------------------------
 
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"

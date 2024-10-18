@@ -62,9 +62,8 @@ def get_entity_id(entity, df, doc_id):
 
     return -1
 
-#------------------------------------------------------------------------------------------
-data_name = "dev" # dev  test
-#------------------------------------------------------------------------------------------
+
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"

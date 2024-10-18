@@ -93,9 +93,7 @@ def get_similar_id(entity, entity_list, model, docred_df, doc_id):
 
 
 
-#------------------------------------------------------------------------------------------
-data_name = "dev" # dev  test
-#------------------------------------------------------------------------------------------
+data_name = "dev"
 
 doc_dir = '../data/docred/'
 doc_filename = f"{doc_dir}{data_name}.json"

@@ -126,10 +126,8 @@ now = datetime.now()
 formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
 print("The start time is:", formatted_time)
 
-#------------------------------------------------------------------------------------------
-data_name = "dev" # test dev
-#------------------------------------------------------------------------------------------
 
+data_name = "dev"
 
 file_path = f"../data/triplet_fact_judgement_prompt/{data_name}/triplet_fact_judgement_prompt_{data_name}_k20.jsonl"
 save_doc_name = "k20"

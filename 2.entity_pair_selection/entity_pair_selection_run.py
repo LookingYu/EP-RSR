@@ -126,9 +126,9 @@ now = datetime.now()
 formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
 print("The start time is:", formatted_time)
 
-#------------------------------------------------------------------------------------------
-data_name = "dev" # test dev
-#------------------------------------------------------------------------------------------
+
+
+data_name = "dev"
 
 file_path = f"../data/entity_pair_selection_prompt/{data_name}/entity_pair_selection_prompt_{data_name}_01.jsonl"
 
