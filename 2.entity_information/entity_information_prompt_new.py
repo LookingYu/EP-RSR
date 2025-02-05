@@ -1,0 +1,231 @@
+import pandas as pd
+import json
+
+
+def save_to_jsonl(data, jsonl_file):
+    with open(jsonl_file, 'w', encoding='utf-8') as jsonlfile:
+        for item in data:
+            json.dump(item, jsonlfile, ensure_ascii=False)
+            jsonlfile.write('\n')
+
+def get_doc_title(doc_id, df):
+    title = df['title'][doc_id]
+
+    return title
+
+def get_entity_id(entity, df, doc_id):
+    len_doc = len(df['vertexSet'][doc_id])
+    for entity_id in range(len_doc):
+        for entity_name in df['vertexSet'][doc_id][entity_id]:
+            if entity_name['name'] == entity:
+                return entity_id
+
+    return -1
+
+def get_prompt_entity(title, doc, entity):
+    prompt = f"""The text is as follows:
+
+{title}
+{doc}
+
+What is "{entity}"? (For example, US is a country and 12 is a number) Answer in one sentence.Only output answers without outputting anything else.
+The answer is:"""
+    return prompt
+
+def get_doc_entitys(doc_id, df):
+    entity_list = []
+    for entity in df['vertexSet'][doc_id]:
+        name_list = []
+        for entity_name in entity:
+            name = entity_name['name']
+            name_list.append(name)
+
+        unique_name_list = list(set(name_list))
+        entity_list.append(unique_name_list)
+
+    return entity_list
+
+def get_doc(doc_id, df):
+    sentence_str = ""
+    for sentence in df['sents'][doc_id]:
+        for word in sentence:
+            sentence_str += word
+            sentence_str += " "
+    return sentence_str
+
+def read_jsonl(file_path):
+    data = []
+    with open(file_path, 'r', encoding='utf-8') as f:
+        for line in f:
+
+            data.append(json.loads(line))
+    return data
+
+data_name = "dev"
+
+doc_name = "docred"
+doc_dir = f'../data/{doc_name}/'
+doc_filename = f"{doc_dir}{data_name}.json"
+fr = open(doc_filename, 'r', encoding='utf-8')
+json_info = fr.read()
+docred_df = pd.read_json(json_info)
+docred_len = len(docred_df)
+
+ok_entitys_dict = {}
+
+if data_name == "train_annotated" or data_name == "train":
+    for doc_id in range(docred_len):
+        label_list = docred_df['labels'][doc_id]
+        title = docred_df['title'][doc_id]
+        for label in label_list:
+            entity_h_id = label['h']
+            entity_t_id = label['t']
+
+            if title not in ok_entitys_dict:
+                ok_entitys_dict[title] = {}
+            if entity_h_id not in ok_entitys_dict[title]:
+                ok_entitys_dict[title][entity_h_id] = ""
+
+            if entity_t_id not in ok_entitys_dict[title]:
+                ok_entitys_dict[title][entity_t_id] = ""
+
+            ok_entitys_dict[title][entity_h_id] = "ok"
+            ok_entitys_dict[title][entity_t_id] = "ok"
+
+else:
+    file_path = f"../data/get_entity_pair_selection_label/{data_name}/{doc_name}_{data_name}_entity_pair_selection_0-{docred_len}_answer-01.jsonl"
+    jsonl_data = read_jsonl(file_path)
+    file_path_02 = f"../data/get_entity_pair_selection_label/{data_name}/{doc_name}_{data_name}_entity_pair_selection_0-{docred_len}_answer-01-02.jsonl"
+    jsonl_data_02 = read_jsonl(file_path_02)
+    file_path_03 = f"../data/get_entity_pair_selection_label/{data_name}/{doc_name}_{data_name}_entity_pair_selection_0-{docred_len}_answer-01-03.jsonl"
+    jsonl_data_03 = read_jsonl(file_path_03)
+    file_path_04 = f"../data/get_entity_pair_selection_label/{data_name}/{doc_name}_{data_name}_entity_pair_selection_0-{docred_len}_answer-01-04.jsonl"
+    jsonl_data_04 = read_jsonl(file_path_04)
+    file_path_05 = f"../data/get_entity_pair_selection_label/{data_name}/{doc_name}_{data_name}_entity_pair_selection_0-{docred_len}_answer-01-05.jsonl"
+    jsonl_data_05 = read_jsonl(file_path_05)
+
+
+    for data in jsonl_data:
+        entity_h_id = data["h_idx"]
+        entity_t_id = data["t_idx"]
+        title = data["title"]
+
+        if title not in ok_entitys_dict:
+            ok_entitys_dict[title] = {}
+        if entity_h_id not in ok_entitys_dict[title]:
+            ok_entitys_dict[title][entity_h_id] = ""
+
+        if entity_t_id not in ok_entitys_dict[title]:
+            ok_entitys_dict[title][entity_t_id] = ""
+
+        ok_entitys_dict[title][entity_h_id] = "ok"
+        ok_entitys_dict[title][entity_t_id] = "ok"
+
+    for data in jsonl_data_02:
+        entity_h_id = data["h_idx"]
+        entity_t_id = data["t_idx"]
+        title = data["title"]
+
+        if title not in ok_entitys_dict:
+            ok_entitys_dict[title] = {}
+        if entity_h_id not in ok_entitys_dict[title]:
+            ok_entitys_dict[title][entity_h_id] = ""
+
+        if entity_t_id not in ok_entitys_dict[title]:
+            ok_entitys_dict[title][entity_t_id] = ""
+
+        ok_entitys_dict[title][entity_h_id] = "ok"
+        ok_entitys_dict[title][entity_t_id] = "ok"
+
+    for data in jsonl_data_03:
+        entity_h_id = data["h_idx"]
+        entity_t_id = data["t_idx"]
+        title = data["title"]
+
+        if title not in ok_entitys_dict:
+            ok_entitys_dict[title] = {}
+        if entity_h_id not in ok_entitys_dict[title]:
+            ok_entitys_dict[title][entity_h_id] = ""
+
+        if entity_t_id not in ok_entitys_dict[title]:
+            ok_entitys_dict[title][entity_t_id] = ""
+
+        ok_entitys_dict[title][entity_h_id] = "ok"
+        ok_entitys_dict[title][entity_t_id] = "ok"
+
+    for data in jsonl_data_04:
+        entity_h_id = data["h_idx"]
+        entity_t_id = data["t_idx"]
+        title = data["title"]
+
+        if title not in ok_entitys_dict:
+            ok_entitys_dict[title] = {}
+        if entity_h_id not in ok_entitys_dict[title]:
+            ok_entitys_dict[title][entity_h_id] = ""
+
+        if entity_t_id not in ok_entitys_dict[title]:
+            ok_entitys_dict[title][entity_t_id] = ""
+
+        ok_entitys_dict[title][entity_h_id] = "ok"
+        ok_entitys_dict[title][entity_t_id] = "ok"
+
+
+    for data in jsonl_data_05:
+        entity_h_id = data["h_idx"]
+        entity_t_id = data["t_idx"]
+        title = data["title"]
+
+        if title not in ok_entitys_dict:
+            ok_entitys_dict[title] = {}
+        if entity_h_id not in ok_entitys_dict[title]:
+            ok_entitys_dict[title][entity_h_id] = ""
+
+        if entity_t_id not in ok_entitys_dict[title]:
+            ok_entitys_dict[title][entity_t_id] = ""
+
+        ok_entitys_dict[title][entity_h_id] = "ok"
+        ok_entitys_dict[title][entity_t_id] = "ok"
+
+
+start = 0
+end = docred_len
+
+
+final_list = []
+for doc_id in range(start, end):
+
+    title = get_doc_title(doc_id, docred_df)
+    doc = get_doc(doc_id, docred_df)
+    entitys_list = get_doc_entitys(doc_id, docred_df)
+
+    for index_1 in range(len(entitys_list)):
+        for entity_name in entitys_list[index_1]:
+
+            entity_id = get_entity_id(entity_name, docred_df, doc_id)
+
+            if title not in ok_entitys_dict:
+                ok_entitys_dict[title] = {}
+            if entity_id not in ok_entitys_dict[title]:
+                ok_entitys_dict[title][entity_id] = ""
+
+            if ok_entitys_dict[title][entity_id] != "ok":
+                continue
+
+            prompt = get_prompt_entity(title, doc, entity_name)
+
+
+            data_dict = {}
+            data_dict["title"] = title
+            data_dict["entity"] = entity_name
+            data_dict["entity_id"] = entity_id
+            data_dict["prompt"] = prompt
+            data_dict["response"] = ""
+            final_list.append(data_dict)
+
+    print(f"Doc:{title} prompt over")
+
+
+jsonl_file = f"../data/entity_information_prompt/{data_name}/prompt_{doc_name}_{data_name}_entity_information_doc0-{docred_len}.jsonl"
+
+save_to_jsonl(final_list, jsonl_file)
+print(f"The result is saved in the file {jsonl_file}")
