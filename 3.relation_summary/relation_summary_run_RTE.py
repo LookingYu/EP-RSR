@@ -2,13 +2,12 @@ import subprocess
 import json
 import pandas as pd
 import numpy as np
-import json
 from datetime import datetime
 
 def save_to_jsonl(data, jsonl_file):
     with open(jsonl_file, 'w', encoding='utf-8') as jsonlfile:
         for item in data:
-            json.dump(item, jsonlfile)
+            json.dump(item, jsonlfile, ensure_ascii=False)
             jsonlfile.write('\n')
 def read_jsonl(file_path):
     data = []
@@ -24,8 +23,9 @@ def run_one(prompt):
     prompt_list.append(prompt)
     system_prompt = ""
     message = prompt_list
-    temperature = 0.1
-    max_new_tokens = 20
+    temperature = 0.9
+    max_new_tokens = 50
+
     data = {}
     data["system_prompt"] = system_prompt
     data["message"] = message
@@ -37,12 +37,11 @@ def run_one(prompt):
         json.dump(data, f, ensure_ascii=False)
     remote_path = "local_prompt.json"
 
-    final_command = f'curl -X POST "http://127.0.0.1:6006" -H \'Content-Type: application/json\' -d@\'{remote_path}\' '
 
+    final_command = f'curl -X POST "http://127.0.0.1:6006" -H \'Content-Type: application/json\' -d@\'{remote_path}\' '
 
     result = subprocess.run(final_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     result_list = result.stdout
-
 
     if result_list == "Internal Server Error":
         return ""
@@ -50,6 +49,7 @@ def run_one(prompt):
     else:
 
         result_list = eval(result_list)
+
         response = result_list[0]
 
         assistant_start_pos = response.find("<|start_header_id|>assistant<|end_header_id|>")
@@ -64,11 +64,13 @@ def run_one(prompt):
 
         return result_response_unique
 
+
 def run_list(prompt_list):
+
     system_prompt = ""
     message = prompt_list
-    temperature = 0.1
-    max_new_tokens = 20
+    temperature = 0.9
+    max_new_tokens = 50
 
     data = {}
     data["system_prompt"] = system_prompt
@@ -80,10 +82,11 @@ def run_list(prompt_list):
     local_file = "local_prompt.json"
     with open(local_file, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
+
     remote_path = "local_prompt.json"
 
-    final_command = f'curl -X POST "http://127.0.0.1:6006" -H \'Content-Type: application/json\' -d@\'{remote_path}\' '
 
+    final_command = f'curl -X POST "http://127.0.0.1:6006" -H \'Content-Type: application/json\' -d@\'{remote_path}\' '
 
     result = subprocess.run(final_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     result_list = result.stdout
@@ -101,50 +104,51 @@ def run_list(prompt_list):
         result_list = eval(result_list)
 
         for response in result_list:
-
             assistant_start_pos = response.find("<|start_header_id|>assistant<|end_header_id|>")
             result_response_1 = response[assistant_start_pos:]
-
             assistant_end_pos = result_response_1.find("<|eot_id|>")
             result_response_2 = result_response_1[:assistant_end_pos]
-
             result_response = result_response_2.replace("<|start_header_id|>assistant<|end_header_id|>", "", 1)
 
-
             result_response_unique = result_response.strip()
-
             response_list_run.append(result_response_unique)
+
+
+    if len(prompt_list) != len(response_list_run):
+        response_list_run.clear()
+        for id in range(len(prompt_list)):
+            prompt = prompt_list[id]
+            response = run_one(prompt)
+            response_list_run.append(response)
 
     return response_list_run
 
 
 data_name = "dev"
-doc_name = "docred"
 
-file_path = f"../data/triplet_fact_judgement_prompt/{data_name}/triplet_fact_judgement_prompt_{data_name}_k20-{doc_name}.jsonl"
-save_doc_name = f"k20-{doc_name}"
-
-jsonl_data = read_jsonl(file_path)
-
-len_data = len(jsonl_data)
-
-print("data len：",len_data)
-print("----------------------------------")
-
+doc_name = "redocred"
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
-
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
 
+file_path = f"../data/relation_summary_prompt/{data_name}/result_{doc_name}_{data_name}_doc0-{docred_len}-RTE.jsonl"
 
-batch_size = 10
+
+jsonl_data = read_jsonl(file_path)
+len_data = len(jsonl_data)
+
+print("data len: ",len_data)
+print("----------------------------------")
+
+batch_size = 20
 prompt_list = []
 response_list = []
 id_list = []
+
 
 start = 0
 save_id = 0
@@ -153,18 +157,21 @@ save_data_list = []
 save_cnt = 0
 
 
+
 for id in range(start, end):
+
     if len(prompt_list) == batch_size:
+
         response_list = run_list(prompt_list)
 
         for i in range(batch_size):
             now_id = id_list[i]
             if i >= len(response_list):
-                jsonl_data[now_id]["response"] = []
+                jsonl_data[now_id]["entities_description"] = ""
                 print(f"{now_id} data query failed")
             else:
                 response = response_list[i]
-                jsonl_data[now_id]["response"] = response
+                jsonl_data[now_id]["entities_description"] = response
                 print(f"{now_id} data query completed")
 
             save_data_list.append(jsonl_data[now_id])
@@ -173,7 +180,7 @@ for id in range(start, end):
         id_list.clear()
 
     if save_cnt == 200:
-        save_name = f"../data/triplet_fact_judgement_run/{data_name}/{save_doc_name}/result_{doc_name}_{data_name}_triplet_fact_judgement-{save_doc_name}_{save_id}.jsonl"
+        save_name = f"../data/relation_summary_run/{data_name}/result_{doc_name}_{data_name}_relation_summary-RTE_{save_id}.jsonl"
         save_to_jsonl(save_data_list, save_name)
         print(f"The result is saved in the file {save_name}")
         save_id += 1
@@ -186,15 +193,14 @@ for id in range(start, end):
     save_cnt += 1
 
 
-
-
 if len(prompt_list) > 0:
+
     response_list = run_list(prompt_list)
 
     for i in range(len(id_list)):
         response = response_list[i]
         now_id = id_list[i]
-        jsonl_data[now_id]["response"] = response
+        jsonl_data[now_id]["entities_description"] = response
         print(f"{now_id} data query completed")
 
         save_data_list.append(jsonl_data[now_id])
@@ -202,8 +208,8 @@ if len(prompt_list) > 0:
     prompt_list.clear()
     id_list.clear()
 
-    save_name = f"../data/triplet_fact_judgement_run/{data_name}/{save_doc_name}/result_{doc_name}_{data_name}_triplet_fact_judgement-{save_doc_name}_{save_id}.jsonl"
-    save_to_jsonl(save_data_list, save_name)
+    save_name = f"../data/relation_summary_run/{data_name}/result_{doc_name}_{data_name}_relation_summary-RTE_{save_id}.jsonl"
+    save_to_jsonl(save_data_list,save_name)
     print(f"The result is saved in the file {save_name}")
     save_id += 1
     save_cnt = 0

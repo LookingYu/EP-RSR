@@ -128,15 +128,10 @@ def run_list(prompt_list):
 
 
 
-now = datetime.now()
-
-formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
-print("The start time is:", formatted_time)
-
-
 data_name = "dev"
 
-doc_dir = '../data/docred/'
+doc_name = "docred"
+doc_dir = f'../data/{doc_name}/'
 doc_filename = f"{doc_dir}{data_name}.json"
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
@@ -144,7 +139,7 @@ docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
 
-file_path = f"../data/relation_summary_prompt/{data_name}/result_docred_{data_name}_doc0-{docred_len}.jsonl"
+file_path = f"../data/relation_summary_prompt/{data_name}/result_{doc_name}_{data_name}_doc0-{docred_len}.jsonl"
 
 jsonl_data = read_jsonl(file_path)
 len_data = len(jsonl_data)
@@ -187,7 +182,7 @@ for id in range(start, end):
         id_list.clear()
 
     if save_cnt == 200:
-        save_name = f"../data/relation_summary_run/{data_name}/result_docred_{data_name}_relation_summary_{save_id}.jsonl"
+        save_name = f"../data/relation_summary_run/{data_name}/result_{doc_name}_{data_name}_relation_summary_{save_id}.jsonl"
         save_to_jsonl(save_data_list, save_name)
         print(f"The result is saved in the file {save_name}")
         save_id += 1
@@ -215,15 +210,10 @@ if len(prompt_list) > 0:
     prompt_list.clear()
     id_list.clear()
 
-    save_name = f"../data/relation_summary_run/{data_name}/result_docred_{data_name}_relation_summary_{save_id}.jsonl"
+    save_name = f"../data/relation_summary_run/{data_name}/result_{doc_name}_{data_name}_relation_summary_{save_id}.jsonl"
     save_to_jsonl(save_data_list,save_name)
     print(f"The result is saved in the file {save_name}")
     save_id += 1
     save_cnt = 0
     save_data_list.clear()
 
-
-now = datetime.now()
-
-formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
-print("The end time is:", formatted_time)

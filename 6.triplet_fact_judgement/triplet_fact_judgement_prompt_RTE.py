@@ -214,16 +214,16 @@ def get_doc(doc_id, df):
 
 
 data_name = "dev"
+doc_name = "redocred"
 
-doc_name = "docred"
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-train_doc_filename = f"{doc_dir}train_annotated.json"
+train_doc_filename = f"{doc_dir}train_revised.json"
 train_docred_fr = open(train_doc_filename, 'r', encoding='utf-8')
 train_json_info = train_docred_fr.read()
 train_docred_df = pd.read_json(train_json_info)
@@ -234,7 +234,6 @@ rel_info = info_fr.read()
 rel_info = eval(rel_info)
 
 reverse_rel_info = {v: k for k, v in rel_info.items()}
-
 
 
 with open('../relation_description.json', 'r') as file:
@@ -253,25 +252,13 @@ for list in rel_judge_list:
         rel_judge_dict[fruits[0]].append((fruits[1], fruits[2]))
 
 
-entity_information_objects = read_jsonl(f"../data/entity_information/{data_name}/result_{doc_name}_{data_name}_entity_information_0-{docred_len}.jsonl")
-entity_information_list = {}
-
-for data in entity_information_objects:
-    title = data["title"]
-    entity = data["entity"]
-    response = data["response"]
-    if title not in entity_information_list:
-        entity_information_list[title] = {}
-    if entity not in entity_information_list[title]:
-        entity_information_list[title][entity] = ""
-    entity_information_list[title][entity] = response
 
 
 if data_name == "train_annotated" or data_name == "train":
-    file_path = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}-{doc_name}.jsonl"
+    file_path = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}-RTE-{doc_name}.jsonl"
     jsonl_data = read_jsonl(file_path)
 else:
-    file_path = f"../data/check_result_multiple_choice_jsonl/{data_name}/result_{doc_name}_{data_name}_multiple_choice_path-k20-{doc_name}_0-{docred_len}.jsonl"
+    file_path = f"../data/check_result_multiple_choice_jsonl/{data_name}/result_{doc_name}_{data_name}_multiple_choice_path-k20-RTE-{doc_name}_0-{docred_len}.jsonl"
     jsonl_data = read_jsonl(file_path)
 
 save_list = []
@@ -288,8 +275,6 @@ for id in range(start, length):
     response = data["response"]
     entity_h = data["entity_h"]
     entity_t = data["entity_t"]
-    entity_h_id = data["entity_h_id"]
-    entity_t_id = data["entity_t_id"]
     title = data["title"]
     doc_id = get_docid(title, docred_df)
     doc_text = get_doc(doc_id, docred_df)
@@ -317,38 +302,20 @@ for id in range(start, length):
             cnt += 1
 
 
-    if entity_h in entity_information_list[title]:
-        entity_h_description = entity_information_list[title][entity_h]
-    else:
-        entity_h_description = "no description"
-    if entity_t in entity_information_list[title]:
-        entity_t_description = entity_information_list[title][entity_t]
-    else:
-        entity_t_description = "no description"
-
-    evidence = get_evidence(doc_id, entity_h, entity_h_id, entity_t, entity_t_id, docred_df)
-
-
-    entity_h_description = add_period_if_missing(entity_h_description)
-    entity_t_description = add_period_if_missing(entity_t_description)
-    evidence = add_period_if_missing(evidence)
-
-    entity_h_description = deal_head_description(entity_h, entity_h_description)
-    entity_t_description = deal_head_description(entity_t, entity_t_description)
 
     for rel in rel_list:
         if rel == "no_relation":
             continue
 
-        if rel_h_t_judge(rel, entity_h_id, entity_t_id, rel_judge_dict, reverse_rel_info, doc_id, docred_df):
+        # if rel_h_t_judge(rel, entity_h_id, entity_t_id, rel_judge_dict, reverse_rel_info, doc_id, docred_df):
 
-            extract_txt = get_txt(entity_h, entity_t, entity_h_description, entity_t_description, evidence)
-            extract_entity_pair = get_entity_pair(entity_h, entity_t)
+            # extract_txt = get_txt(entity_h, entity_t, entity_h_description, entity_t_description, evidence)
+        extract_entity_pair = get_entity_pair(entity_h, entity_t)
 
-            rel_description = rel_description_dict[rel]
+        rel_description = rel_description_dict[rel]
 
-            instruction = f"""Based on the text and the description of the relation "{rel}", give an answer about whether the head and tail entity pairs (head entity and tail entity) satisfy the "{rel}" relation."""
-            inputs = f"""## Relation description:
+        instruction = f"""Based on the text and the description of the relation "{rel}", give an answer about whether the head and tail entity pairs (head entity and tail entity) satisfy the "{rel}" relation."""
+        inputs = f"""## Relation description:
 {rel_description}
 
 ## The text to be extracted:
@@ -357,20 +324,21 @@ for id in range(start, length):
 ## Entity pair to be extracted:
 {extract_entity_pair}"""
 
-            prompt1 = get_prompt(instruction, inputs)
+        prompt1 = get_prompt(instruction, inputs)
 
-            save_dict_1 = {}
-            save_dict_1['title'] = title
-            save_dict_1['doc_id'] = doc_id
-            save_dict_1['prompt'] = prompt1
-            save_dict_1["entity_h"] = entity_h
-            save_dict_1["entity_t"] = entity_t
-            save_dict_1["entity_h_id"] = entity_h_id
-            save_dict_1["entity_t_id"] = entity_t_id
-            save_dict_1["prompt_rel"] = rel
-            save_dict_1["response"] = ""
-            save_list.append(save_dict_1)
+        save_dict_1 = {}
+        save_dict_1["instruction"] = instruction
+        save_dict_1["input"] = inputs
+        save_dict_1["output"] = ""
+        save_dict_1['title'] = title
+        save_dict_1['doc_id'] = doc_id
+        save_dict_1['prompt'] = prompt1
+        save_dict_1["entity_h"] = entity_h
+        save_dict_1["entity_t"] = entity_t
+        save_dict_1["prompt_rel"] = rel
+        save_dict_1["response"] = ""
+        save_list.append(save_dict_1)
 
-save_name = f"../data/triplet_fact_judgement_prompt/{data_name}/triplet_fact_judgement_prompt_{data_name}_k20-{doc_name}.jsonl"
+save_name = f"../data/triplet_fact_judgement_prompt/{data_name}/triplet_fact_judgement_prompt_{data_name}_k20-RTE-{doc_name}.jsonl"
 save_to_jsonl(save_list, save_name)
 print(f"The result is saved in the file {save_name}")

@@ -53,14 +53,15 @@ def add_period_if_missing(string):
         string += '.'
     return string
 
-def rel_h_t_judge(rel, entity_h_id, entity_t_id, rel_judge_dict, reverse_rel_info, doc_id, df):
+def rel_h_t_judge(rel, type_dict, entity_h, entity_t, rel_judge_dict, reverse_rel_info, doc_id, df):
 
-    entity_h_type = df['vertexSet'][doc_id][entity_h_id][0]['type']
-    entity_t_type = df['vertexSet'][doc_id][entity_t_id][0]['type']
+    entity_h_type = type_dict[entity_h]
+    entity_t_type = type_dict[entity_t]
+
     key = reverse_rel_info[rel]
     if key in rel_judge_dict:
         for limit in rel_judge_dict[key]:
-            if limit[0] == entity_h_type and limit[1] == entity_t_type:
+            if limit[0] in entity_h_type and limit[1] in entity_t_type:
                 return True
 
         return False
@@ -158,22 +159,22 @@ def get_doc(doc_id, df):
 
 
 data_name = "dev"
+doc_name = "redocred"
 
-doc_name = "docred"
+rel_objects = read_jsonl(f"../data/retrieval_from_train/{data_name}/path-k20-RTE-{doc_name}.jsonl")
+
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-info_fr = open('../data/docred/rel_info.json', 'r', encoding='utf-8')
+info_fr = open(f'../data/{doc_name}/rel_info.json', 'r', encoding='utf-8')
 rel_info = info_fr.read()
 rel_info = eval(rel_info)
 
 reverse_rel_info = {v: k for k, v in rel_info.items()}
-
-rel_objects = read_jsonl(f"../data/retrieval_from_train/{data_name}/path-k20-{doc_name}.jsonl")
 
 with open('../rel2temp_with_1.json', 'r') as file:
     rel2temp = json.load(file)
@@ -192,18 +193,22 @@ for list in rel_judge_list:
         rel_judge_dict[fruits[0]].append((fruits[1], fruits[2]))
 
 
-entity_information_objects = read_jsonl(f"../data/entity_information/{data_name}/result_{doc_name}_{data_name}_entity_information_0-{docred_len}.jsonl")
-entity_information_list = {}
+file_path = f"../data/entity_information/{data_name}/result_{doc_name}_{data_name}_entity_information_0-{docred_len}-type.jsonl"
+jsonl_data = read_jsonl(file_path)
 
-for data in entity_information_objects:
-    title = data["title"]
+type_dict = {}
+for data in jsonl_data:
     entity = data["entity"]
-    response = data["response"]
-    if title not in entity_information_list:
-        entity_information_list[title] = {}
-    if entity not in entity_information_list[title]:
-        entity_information_list[title][entity] = ""
-    entity_information_list[title][entity] = response
+    type = data["type"]
+    title = data["title"]
+
+    if title not in type_dict:
+        type_dict[title] = {}
+    if entity not in type_dict[title]:
+        type_dict[title][entity] = []
+
+    if type not in type_dict[title][entity]:
+        type_dict[title][entity].append(type)
 
 
 
@@ -233,22 +238,10 @@ for id in range(start, length):
     entities_description = dev_dict["entities_description"]
     entity_h = dev_dict["entity_h"]
     entity_t = dev_dict["entity_t"]
-    entity_h_id = dev_dict["entity_h_id"]
-    entity_t_id = dev_dict["entity_t_id"]
     title = dev_dict["title"]
     doc_id = get_docid(title, docred_df)
     doc_text = get_doc(doc_id, docred_df)
 
-    if entity_h in entity_information_list[title]:
-        entity_h_description = entity_information_list[title][entity_h]
-    else:
-        entity_h_description = "no description"
-    if entity_t in entity_information_list[title]:
-        entity_t_description = entity_information_list[title][entity_t]
-    else:
-        entity_t_description = "no description"
-
-    evidence = get_evidence(doc_id, entity_h, entity_h_id, entity_t, entity_t_id, docred_df)
 
     choice_rel_list = []
     for rel_dict in rels_list:
@@ -256,19 +249,15 @@ for id in range(start, length):
         rel = rel_dict[0]
         choice_rel_list.append(rel)
 
-    entities_description = add_period_if_missing(entities_description)
-    entity_h_description = add_period_if_missing(entity_h_description)
-    entity_t_description = add_period_if_missing(entity_t_description)
-    evidence = add_period_if_missing(evidence)
-
-    entity_h_description = deal_head_description(entity_h, entity_h_description)
-    entity_t_description = deal_head_description(entity_t, entity_t_description)
-
 
     choice_rel_list_h_t = []
     for rel in choice_rel_list:
-        if rel_h_t_judge(rel, entity_h_id, entity_t_id, rel_judge_dict, reverse_rel_info, doc_id, docred_df):
+        # choice_rel_list_h_t.append(rel)
+        if entity_h not in type_dict[title] or entity_t not in type_dict[title]:
             choice_rel_list_h_t.append(rel)
+        else:
+            if rel_h_t_judge(rel, type_dict[title], entity_h, entity_t, rel_judge_dict, reverse_rel_info, doc_id, docred_df):
+                choice_rel_list_h_t.append(rel)
 
     if len(choice_rel_list_h_t) > 0 :
         choice_rel_list_h_t.append("no_relation")
@@ -288,7 +277,6 @@ for id in range(start, length):
 ## Options:
 {options}"""
 
-
         prompt1 = get_prompt(instruction, inputs)
 
         save_dict_1 = {}
@@ -300,18 +288,19 @@ for id in range(start, length):
         save_dict_1['prompt'] = prompt1
         save_dict_1["entity_h"] = entity_h
         save_dict_1["entity_t"] = entity_t
-        save_dict_1["entity_h_id"] = entity_h_id
-        save_dict_1["entity_t_id"] = entity_t_id
         save_dict_1["prompt_rel"] = choice_rel_list_h_t
         save_dict_1["response"] = []
         save_list.append(save_dict_1)
 
 
-
     choice_rel_list_t_h = []
     for rel in choice_rel_list:
-        if rel_h_t_judge(rel, entity_t_id, entity_h_id, rel_judge_dict, reverse_rel_info, doc_id, docred_df):
+        # choice_rel_list_t_h.append(rel)
+        if entity_h not in type_dict[title] or entity_t not in type_dict[title]:
             choice_rel_list_t_h.append(rel)
+        else:
+            if rel_h_t_judge(rel, type_dict[title], entity_t, entity_h, rel_judge_dict, reverse_rel_info, doc_id, docred_df):
+                choice_rel_list_t_h.append(rel)
 
     if len(choice_rel_list_t_h) > 0 :
         choice_rel_list_t_h.append("no_relation")
@@ -343,14 +332,13 @@ for id in range(start, length):
         save_dict_2['prompt'] = prompt2
         save_dict_2["entity_h"] = entity_t
         save_dict_2["entity_t"] = entity_h
-        save_dict_2["entity_h_id"] = entity_t_id
-        save_dict_2["entity_t_id"] = entity_h_id
         save_dict_2["prompt_rel"] = choice_rel_list_t_h
         save_dict_2["response"] = []
         save_list.append(save_dict_2)
 
 
-save_name = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}-{doc_name}.jsonl"
+save_name = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}-RTE-{doc_name}.jsonl"
 save_to_jsonl(save_list, save_name)
 print(f"The result is saved in the file {save_name}")
+print(len(save_list))
 

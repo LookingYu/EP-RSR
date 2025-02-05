@@ -50,10 +50,10 @@ def read_jsonl(file_path):
 
 
 data_name = "dev"
+doc_name = "redocred"
 
-doc_name = "docred"
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
@@ -65,7 +65,7 @@ rel_info = eval(rel_info)
 
 reverse_rel_info = {v: k for k, v in rel_info.items()}
 
-save_doc_name = f"k20-{doc_name}"
+save_doc_name = f"k20-RTE-{doc_name}"
 
 file_path = f"../data/check_result_triplet_fact_judgement_jsonl/{data_name}/result_{doc_name}_{data_name}_triplet_fact_judgement_0-{docred_len}-{save_doc_name}.jsonl"
 
@@ -84,16 +84,20 @@ for id in range(start, length):
     prompt_rel = data["prompt_rel"]
     prompt = data["prompt"]
     response = data["response"]
-    entity_h_id = data["entity_h_id"]
-    entity_t_id = data["entity_t_id"]
+    entity_h_name = data["entity_h"]
+    entity_t_name = data["entity_t"]
     doc_id = data["doc_id"]
 
 
     if "YES" in response:
+
+        if data["entity_h"] == data["entity_t"]:
+            continue
+
         rel_dict = {}
         rel_dict["title"] = get_doc_title(doc_id, docred_df)
-        rel_dict['h_idx'] = data["entity_h_id"]
-        rel_dict['t_idx'] = data["entity_t_id"]
+        rel_dict['h_name'] = data["entity_h"]
+        rel_dict['t_name'] = data["entity_t"]
         rel_dict["r"] = reverse_rel_info[prompt_rel]
         save_list.append(rel_dict)
 

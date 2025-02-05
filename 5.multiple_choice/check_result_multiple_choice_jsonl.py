@@ -19,16 +19,17 @@ def save_to_jsonl(data, jsonl_file):
 
 data_name = "dev"
 
-doc_dir = '../data/docred/'
+doc_name = "docred"
+doc_dir = f'../data/{doc_name}/'
 doc_filename = f"{doc_dir}{data_name}.json"
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-file_path = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}.jsonl"
+file_path = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}-{doc_name}.jsonl"
 
-save_doc_name = "path-k20"
+save_doc_name = f"path-k20-{doc_name}"
 
 jsonl_data = read_jsonl(file_path)
 
@@ -43,7 +44,7 @@ save_list = []
 
 for jsonl_id in range(start, end):
 
-    jsonl_file_path = f"../data/multiple_choice_run/{data_name}/{save_doc_name}/result_docred_{data_name}_multiple_choice_{save_doc_name}_{jsonl_id}.jsonl"
+    jsonl_file_path = f"../data/multiple_choice_run/{data_name}/{save_doc_name}/result_{doc_name}_{data_name}_multiple_choice_{save_doc_name}_{jsonl_id}.jsonl"
     jsonl_data = read_jsonl(jsonl_file_path)
 
     for item in jsonl_data:
@@ -63,7 +64,7 @@ for jsonl_id in range(start, end):
             data_dict["response"] = item["response"]
             save_list.append(data_dict)
 
-save_path = f"../data/check_result_multiple_choice_jsonl/{data_name}/result_docred_{data_name}_multiple_choice_{save_doc_name}_0-{docred_len}.jsonl"
+save_path = f"../data/check_result_multiple_choice_jsonl/{data_name}/result_{doc_name}_{data_name}_multiple_choice_{save_doc_name}_0-{docred_len}.jsonl"
 save_to_jsonl(save_list, save_path)
 print(f"The result is saved in the file {save_path}")
 print(f"There are {cnt} empty data records")

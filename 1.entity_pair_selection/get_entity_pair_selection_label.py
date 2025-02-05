@@ -95,22 +95,23 @@ def get_similar_id(entity, entity_list, model, docred_df, doc_id):
 
 data_name = "dev"
 
-doc_dir = '../data/docred/'
+doc_name = "docred"
+doc_dir = f'../data/{doc_name}/'
 doc_filename = f"{doc_dir}{data_name}.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-info_fr = open('../data/docred/rel_info.json', 'r', encoding='utf-8')
+info_fr = open(f'../data/{doc_name}/rel_info.json', 'r', encoding='utf-8')
 rel_info = info_fr.read()
 rel_info = eval(rel_info)
 
 reverse_rel_info = {v: k for k, v in rel_info.items()}
 
-save_doc_name = "01-01"
+save_doc_name = "01"
 
-file_path = f"../data/check_result_entity_pair_selection_jsonl/{data_name}/result_docred_{data_name}_entity_pair_selection_0-{docred_len}-{save_doc_name}.jsonl"
+file_path = f"../data/check_result_entity_pair_selection_jsonl/{data_name}/result_{doc_name}_{data_name}_entity_pair_selection_0-{docred_len}-{save_doc_name}.jsonl"
 jsonl_data = read_jsonl(file_path)
 
 model = SentenceTransformer('../data/all-mpnet-base')
@@ -186,7 +187,7 @@ for id in range(start, length):
 unique_save_list = [dict(t) for t in {tuple(d.items()) for d in save_list}]
 
 
-save_name = f"../data/get_entity_pair_selection_label/{data_name}/docred_{data_name}_entity_pair_selection_0-{docred_len}_answer-{save_doc_name}.jsonl"
+save_name = f"../data/get_entity_pair_selection_label/{data_name}/{doc_name}_{data_name}_entity_pair_selection_0-{docred_len}_answer-{save_doc_name}.jsonl"
 
 save_to_jsonl(unique_save_list, save_name)
 print(f"The result is saved in the file {save_name}")

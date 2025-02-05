@@ -35,7 +35,12 @@ pip install -r requirements.txt
 ### Step 3: Deploy Model
 
 ```
-Run ../0.pre_model/llama3-api.py, model deployed at host='127.0.0.1', port=6006
+(1) for not fine-tuning parts
+Run ../0.pre_model/llama3-api.py, base model deployed at host='127.0.0.1', port=6006
+
+(2) for fine-tuning parts
+Run ../0.pre_model/merge_model.py, merged to obtain the fine-tuned model
+Run ../0.pre_model/llama3-api.py, fine-tuned model deployed at host='127.0.0.1', port=6006
 ```
 
 ## Data Preprocessing
@@ -47,7 +52,7 @@ Run ../0.pre_model/llama3-api.py, model deployed at host='127.0.0.1', port=6006
 ```
 Run the following files in order to get entity information jsonl 
 (parameter data_name is: train_annotated)
-../1.entity_information/entity_information_prompt.py 
+../1.entity_information/entity_information_prompt_new.py 
 ../1.entity_information/entity_information_run.py  
 ../1.entity_information/check_result_entity_information_jsonl.py 
 ```
@@ -101,25 +106,25 @@ Run the following files in order to get fine-tuning data
 
 ## Main Run
 
-### I. Obtain Dev Entity Information
-
-```
-Run the following files in order to get entity information jsonl 
-(parameter data_name is: dev)
-../1.entity_information/entity_information_prompt.py 
-../1.entity_information/entity_information_run.py  
-../1.entity_information/check_result_entity_information_jsonl.py 
-```
-
-### II. Obtain Selected Entity Pairs for Dev
+### I. Obtain Selected Entity Pairs for Dev
 
 ```
 Run the following files in order to get selected entity pairs jsonl 
 (parameter data_name is: dev)
-../2.entity_pair_selection/entity_pair_selection_prompt.py
-../2.entity_pair_selection/entity_pair_selection_run.py
-../2.entity_pair_selection/check_result_entity_pair_selection_jsonl.py
-../2.entity_pair_selection/get_entity_pair_selection_label.py
+../1.entity_pair_selection/entity_pair_selection_prompt.py
+../1.entity_pair_selection/entity_pair_selection_run.py
+../1.entity_pair_selection/check_result_entity_pair_selection_jsonl.py
+../1.entity_pair_selection/get_entity_pair_selection_label.py
+```
+
+### II. Obtain Dev Entity Information
+
+```
+Run the following files in order to get entity information jsonl 
+(parameter data_name is: dev)
+../2.entity_information/entity_information_prompt_new.py 
+../2.entity_information/entity_information_run.py  
+../2.entity_information/check_result_entity_information_jsonl.py 
 ```
 
 ### III. Obtain Dev Relation Summary
@@ -161,4 +166,13 @@ Run the following files in order to get triplet facts jsonl
 ../6.triplet_fact_judgement/triplet_fact_judgement_run.py
 ../6.triplet_fact_judgement/check_result_triplet_fact_judgement_jsonl.py
 ../6.triplet_fact_judgement/get_triplet_fact_judgement_label.py
+```
+
+### VII. Obtain Final F1 Score of Dev
+
+```
+Run the following files in order to get the final F1 score of dev
+(parameter data_name is: dev)
+../other/jsonl_to_json.py
+../other/evaluation.py
 ```

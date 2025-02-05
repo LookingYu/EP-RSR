@@ -17,19 +17,19 @@ def save_to_jsonl(data, jsonl_file):
 
 
 data_name = "dev"
+doc_name = "redocred"
 
-doc_name = "docred"
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
-
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-file_path = f"../data/triplet_fact_judgement_prompt/{data_name}/triplet_fact_judgement_prompt_{data_name}_k20-{doc_name}.jsonl"
+save_doc_name = f"k20-RTE-{doc_name}"
 
-save_doc_name = f"k20-{doc_name}"
+file_path = f"../data/triplet_fact_judgement_prompt/{data_name}/triplet_fact_judgement_prompt_{data_name}_{save_doc_name}.jsonl"
+
 
 jsonl_data = read_jsonl(file_path)
 
@@ -48,6 +48,7 @@ for jsonl_id in range(start, end):
     jsonl_data = read_jsonl(jsonl_file_path)
 
     for item in jsonl_data:
+        print(item['response'])
         if item['response'] == "":
             cnt += 1
             print("-------------------There is an empty response------------------")
@@ -59,8 +60,6 @@ for jsonl_id in range(start, end):
             data_dict["prompt_rel"] = item["prompt_rel"]
             data_dict["entity_h"] = item["entity_h"]
             data_dict["entity_t"] = item["entity_t"]
-            data_dict["entity_h_id"] = item["entity_h_id"]
-            data_dict["entity_t_id"] = item["entity_t_id"]
             data_dict["response"] = item["response"]
             save_list.append(data_dict)
 

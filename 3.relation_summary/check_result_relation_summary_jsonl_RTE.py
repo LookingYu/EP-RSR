@@ -33,16 +33,16 @@ def get_docid(title, df):
 
 data_name = "dev"
 
-doc_name = "docred"
+doc_name = "redocred"
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
 
-file_path = f"../data/relation_summary_prompt/{data_name}/result_{doc_name}_{data_name}_doc0-{docred_len}.jsonl"
+file_path = f"../data/relation_summary_prompt/{data_name}/result_{doc_name}_{data_name}_doc0-{docred_len}-RTE.jsonl"
 
 jsonl_data = read_jsonl(file_path)
 len_data = len(jsonl_data)
@@ -63,7 +63,7 @@ rel_info = eval(rel_info)
 
 for jsonl_id in range(start, end):
 
-    jsonl_file_path = f"../data/relation_summary_run/{data_name}/result_{doc_name}_{data_name}_relation_summary_{jsonl_id}.jsonl"
+    jsonl_file_path = f"../data/relation_summary_run/{data_name}/result_{doc_name}_{data_name}_relation_summary-RTE_{jsonl_id}.jsonl"
     jsonl_data = read_jsonl(jsonl_file_path)
 
     for item in jsonl_data:
@@ -71,28 +71,18 @@ for jsonl_id in range(start, end):
             cnt += 1
             print("-------------------There is an empty response------------------")
         else:
+            print(item['entities_description'])
             data_dict = {}
             data_dict["entity_h"] = item["entity_h"]
             data_dict["entity_t"] = item["entity_t"]
-            data_dict["entity_h_id"] = item["entity_h_id"]
-            data_dict["entity_t_id"] = item["entity_t_id"]
             data_dict["entities_description"] = item["entities_description"]
             data_dict["title"] = item["title"]
-
-            # if data_name == "dev" or data_name == "train":
-            #     doc_id = get_docid(item["title"], docred_df)
-            #
-            #     unique_rels = label_judge(item["entity_h_id"], item["entity_t_id"], docred_df, doc_id, rel_info)
-            #     if len(unique_rels) == 0:
-            #         data_dict["label_rel"] = ["no_relation"]
-            #     else:
-            #         data_dict["label_rel"] = unique_rels
 
             save_list.append(data_dict)
 
 
 
-save_path = f"../data/check_result_relation_summary_jsonl/{data_name}/result_{doc_name}_{data_name}_relation_summary_0-{docred_len}.jsonl"
+save_path = f"../data/check_result_relation_summary_jsonl/{data_name}/result_{doc_name}_{data_name}_relation_summary_0-{docred_len}-RTE.jsonl"
 save_to_jsonl(save_list, save_path)
 print(f"The result is saved in the file {save_path}")
 print(f"There are {cnt} empty data records")

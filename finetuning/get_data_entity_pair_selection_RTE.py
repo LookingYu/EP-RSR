@@ -39,11 +39,11 @@ def get_entity_id(entity, df, doc_id):
     return -1
 
 
-data_name = "train_annotated"
+data_name = "train" #train_annotated
 
-doc_name = "docred"
+doc_name = "redocred"
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
@@ -69,26 +69,28 @@ for doc_id in range(start, end):
             sentence_str += word
             sentence_str += " "
 
-
-    entity_list = get_doc_entitys(doc_id, docred_df)
-
-    instruction = f"""Given a text and an entity list as input, list the entity pairs that can be identified as possibly containing a relation."""
-    input = f"""## Text:
-{sentence_str}
-
-## Entity list:
-{entity_list}"""
-    output = ""
-
+    rel_json = {}
 
     label_list = docred_df['labels'][doc_id]
 
-
     for label in label_list:
-        name_h = docred_df['vertexSet'][doc_id][label['h']][0]['name']
-        name_t = docred_df['vertexSet'][doc_id][label['t']][0]['name']
-        str_entities = f"{name_h} ## {name_t}\n"
-        output += str_entities
+        for entity_h in docred_df['vertexSet'][doc_id][label['h']]:
+            for entity_t in docred_df['vertexSet'][doc_id][label['t']]:
+                name_h = entity_h['name']
+                name_t = entity_t['name']
+                if name_h not in rel_json:
+                    rel_json[name_h] = []
+                if name_t not in rel_json[name_h]:
+                    rel_json[name_h].append(name_t)
+
+    instruction = f"""Given a text as input, list the entity pairs that can be identified as possibly containing a relation."""
+    input = f"""## Text:
+{sentence_str}"""
+
+    if len(rel_json) == 0:
+        output = ""
+    else:
+        output = f"{rel_json}"
 
     save_dict = {}
     save_dict["instruction"] = instruction
@@ -97,7 +99,7 @@ for doc_id in range(start, end):
     save_list.append(save_dict)
 
 
-with open(f'finetuning_data/{data_name}_entity_pair_selection_data-{doc_name}.json', 'w') as json_file:
+with open(f'finetuning_data/{data_name}_entity_pair_selection_data-{doc_name}-RTE.json', 'w') as json_file:
     json.dump(save_list, json_file, indent=4)
 
 print(f"data len: {len(save_list)}")

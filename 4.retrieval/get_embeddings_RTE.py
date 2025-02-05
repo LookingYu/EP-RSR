@@ -42,15 +42,15 @@ def get_sentence(entity_h, entity_t, entity_h_description, entity_t_description,
 
 data_name = "dev"
 
-doc_name = "docred"
+doc_name = "redocred"
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-entity_information_objects = read_jsonl(f"../data/entity_information/{data_name}/result_{doc_name}_{data_name}_entity_information_0-{docred_len}.jsonl")
+entity_information_objects = read_jsonl(f"../data/entity_information/{data_name}/result_{doc_name}_{data_name}_entity_information_0-{docred_len}-RTE.jsonl")
 entity_information_list = {}
 
 for data in entity_information_objects:
@@ -63,12 +63,12 @@ for data in entity_information_objects:
         entity_information_list[title][entity] = ""
     entity_information_list[title][entity] = response
 
-data_file_path = f"../data/check_result_relation_summary_jsonl/{data_name}/result_{doc_name}_{data_name}_relation_summary_0-{docred_len}.jsonl"
+data_file_path = f"../data/check_result_relation_summary_jsonl/{data_name}/result_{doc_name}_{data_name}_relation_summary_0-{docred_len}-RTE.jsonl"
 
 data_jsonl_data = read_jsonl(data_file_path)
 print(f"{data_file_path} loading successful")
 
-embeddings_file_path = f"../data/get_embeddings/{doc_name}_{data_name}_embeddings_0-{docred_len}.npy"
+embeddings_file_path = f"../data/get_embeddings/{doc_name}_{data_name}_embeddings_0-{docred_len}-RTE.npy"
 
 model = SentenceTransformer('../data/all-mpnet-base')
 print("model loading successful")
@@ -98,6 +98,7 @@ for data_id in range(data_len):
     entity_h_description = add_period_if_missing(entity_h_description)
     entity_t_description = add_period_if_missing(entity_t_description)
     entity_h_description = deal_head_description(entity_h, entity_h_description)
+
     entity_t_description = deal_head_description(entity_t, entity_t_description)
 
     sentence = get_sentence(entity_h, entity_t, entity_h_description, entity_t_description, entities_description)
@@ -112,4 +113,3 @@ data_embeddings = model.encode(data_sentences)
 
 np.save(embeddings_file_path, data_embeddings)
 print(f"{data_name}_embeddings_0-{docred_len} save in {embeddings_file_path}")
-

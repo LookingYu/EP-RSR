@@ -18,7 +18,8 @@ def save_to_jsonl(data, jsonl_file):
 
 data_name = "dev"
 
-doc_dir = '../data/docred/'
+doc_name = "docred"
+doc_dir = f'../data/{doc_name}/'
 doc_filename = f"{doc_dir}{data_name}.json"
 
 fr = open(doc_filename, 'r', encoding='utf-8')
@@ -26,7 +27,7 @@ json_info = fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-file_path = f"../data/entity_pair_selection_prompt/{data_name}/entity_pair_selection_prompt_{data_name}_01.jsonl"
+file_path = f"../data/entity_pair_selection_prompt/{data_name}/entity_pair_selection_prompt_{data_name}_01_{doc_name}.jsonl"
 
 jsonl_data = read_jsonl(file_path)
 
@@ -37,13 +38,13 @@ start = 0
 end = math.ceil(len_data / 200)
 print("all doc number:",end)
 
-save_doc_name = "01-01"
+save_doc_name = "01"
 
 save_list = []
 
 for jsonl_id in range(start, end):
 
-    jsonl_file_path = f"../data/entity_pair_selection_run/{data_name}/result_docred_{data_name}_entity_pair_selection-{save_doc_name}_{jsonl_id}.jsonl"
+    jsonl_file_path = f"../data/entity_pair_selection_run/{data_name}/result_{doc_name}_{data_name}_entity_pair_selection-{save_doc_name}_{jsonl_id}.jsonl"
     jsonl_data = read_jsonl(jsonl_file_path)
 
     for item in jsonl_data:
@@ -60,7 +61,7 @@ for jsonl_id in range(start, end):
             data_dict["response"] = item["response"]
             save_list.append(data_dict)
 
-save_path = f"../data/check_result_entity_pair_selection_jsonl/{data_name}/result_docred_{data_name}_entity_pair_selection_0-{docred_len}-{save_doc_name}.jsonl"
+save_path = f"../data/check_result_entity_pair_selection_jsonl/{data_name}/result_{doc_name}_{data_name}_entity_pair_selection_0-{docred_len}-{save_doc_name}.jsonl"
 
 save_to_jsonl(save_list, save_path)
 print(f"The result is saved in the file {save_path}")

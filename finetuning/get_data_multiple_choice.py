@@ -17,21 +17,22 @@ def get_docid(title, df):
 
 data_name = "train_annotated"
 
-doc_dir = '../data/docred/'
+doc_name = "docred"
+doc_dir = f'../data/{doc_name}/'
 doc_filename = f"{doc_dir}{data_name}.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-info_fr = open('../data/docred/rel_info.json', 'r', encoding='utf-8')
+info_fr = open(f'../data/{doc_name}/rel_info.json', 'r', encoding='utf-8')
 rel_info = info_fr.read()
 rel_info = eval(rel_info)
 
 reverse_rel_info = {v: k for k, v in rel_info.items()}
 
 
-rel_objects = read_jsonl(f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}.jsonl")
+rel_objects = read_jsonl(f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}-{doc_name}.jsonl")
 
 save_list = []
 num = 0
@@ -83,7 +84,7 @@ for data in rel_objects:
 
 
 
-with open(f'finetuning_data/{data_name}_multiple_choice_data-docred.json', 'w') as json_file:
+with open(f'finetuning_data/{data_name}_multiple_choice_data-{doc_name}.json', 'w') as json_file:
     json.dump(save_list, json_file, indent=4)
 
 print(f"data len: {len(save_list)}")

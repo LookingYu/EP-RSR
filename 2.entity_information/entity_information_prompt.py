@@ -16,7 +16,8 @@ def save_to_jsonl(data, jsonl_file):
 
 data_name = "dev"
 
-doc_dir = '../data/docred/'
+doc_name = "docred"
+doc_dir = f'../data/{doc_name}/'
 doc_filename = f"{doc_dir}{data_name}.json"
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()
@@ -54,7 +55,7 @@ for doc_id in range(start, end):
     print(f"Doc:{title} prompt over")
 
 
-jsonl_file = f"../data/entity_information_prompt/{data_name}/prompt_docred_{data_name}_entity_information_doc0-{docred_len}.jsonl"
+jsonl_file = f"../data/entity_information_prompt/{data_name}/prompt_{doc_name}_{data_name}_entity_information_doc0-{docred_len}.jsonl"
 
 save_to_jsonl(final_list, jsonl_file)
 print(f"The result is saved in the file {jsonl_file}")

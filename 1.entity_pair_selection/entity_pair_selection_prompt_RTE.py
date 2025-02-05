@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import csv
 import json
-import pickle
 
 def get_prompt(instruction, inputs):
     prompt = f"""{instruction}
@@ -41,38 +40,18 @@ def get_doc(doc_id, df):
             sentence_str += " "
     return sentence_str
 
-def get_doc_entitys(doc_id, df):
-
-    entity_list = []
-    for entity in df['vertexSet'][doc_id]:
-
-        name = entity[0]['name']
-
-        entity_list.append(name)
-
-    return entity_list
-
-def get_entity_id(entity, df, doc_id):
-
-    len_doc = len(df['vertexSet'][doc_id])
-    for entity_id in range(len_doc):
-        for entity_name in df['vertexSet'][doc_id][entity_id]:
-            if entity_name['name'] == entity:
-                return entity_id
-
-    return -1
-
 
 data_name = "dev"
+doc_name = "redocred"
 
-doc_dir = '../data/docred/'
-doc_filename = f"{doc_dir}{data_name}.json"
+doc_dir = f'../data/{doc_name}/'
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-info_fr = open('../data/docred/rel_info.json', 'r', encoding='utf-8')
+info_fr = open(f'../data/{doc_name}/rel_info.json', 'r', encoding='utf-8')
 rel_info = info_fr.read()
 rel_info = eval(rel_info)
 
@@ -82,20 +61,15 @@ start = 0
 end = docred_len
 
 save_list = []
-entity_dict_list = []
 
 for doc_id in range(start, end):
 
     title = get_doc_title(doc_id, docred_df)
     sentence_str = get_doc(doc_id, docred_df)
-    entity_list = get_doc_entitys(doc_id, docred_df)
 
-    instruction = f"""Given a text and an entity list as input, list the entity pairs that can be identified as possibly containing a relation."""
+    instruction = f"""Given a text as input, list the entity pairs that can be identified as possibly containing a relation."""
     inputs = f"""## Text:
-{sentence_str}
-
-## Entity list:
-{entity_list}"""
+{sentence_str}"""
 
     prompt = get_prompt(instruction, inputs)
 
@@ -109,7 +83,7 @@ for doc_id in range(start, end):
     save_list.append(save_dict)
 
 
-save_name = f"../data/entity_pair_selection_prompt/{data_name}/entity_pair_selection_prompt_{data_name}_01.jsonl"
+save_name = f"../data/entity_pair_selection_prompt/{data_name}/entity_pair_selection_prompt_{data_name}_01_RTE_{doc_name}.jsonl"
 
 save_to_jsonl(save_list, save_name)
 print(f"The result is saved in the file {save_name}")

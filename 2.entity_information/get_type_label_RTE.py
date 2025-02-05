@@ -6,26 +6,7 @@ import json
 def get_doc_title(doc_id, df):
 
     title = df['title'][doc_id]
-
     return title
-
-
-def get_entity_id(entity, df, doc_id):
-    len_doc = len(df['vertexSet'][doc_id])
-    for entity_id in range(len_doc):
-        for entity_name in df['vertexSet'][doc_id][entity_id]:
-            if entity_name['name'] == entity:
-                return entity_id
-
-    return -1
-
-def judge_rel(entity_h_id, entity_t_id, rel , doc_id, docred_df):
-
-    for label in docred_df['labels'][doc_id]:
-        if entity_h_id == label['h'] and entity_t_id == label['t'] and rel == label['r']:
-            return True
-
-    return False
 
 def read_csv(csv_file):
     data_list = []
@@ -40,6 +21,7 @@ def save_to_jsonl(data, jsonl_file):
         for item in data:
             json.dump(item, jsonlfile, ensure_ascii = False)
             jsonlfile.write('\n')
+
 def read_jsonl(file_path):
     data = []
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -51,9 +33,9 @@ def read_jsonl(file_path):
 
 data_name = "dev"
 
-doc_name = "docred"
+doc_name = "redocred"
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
@@ -65,41 +47,55 @@ rel_info = eval(rel_info)
 
 reverse_rel_info = {v: k for k, v in rel_info.items()}
 
-save_doc_name = f"k20-{doc_name}"
 
-file_path = f"../data/check_result_triplet_fact_judgement_jsonl/{data_name}/result_{doc_name}_{data_name}_triplet_fact_judgement_0-{docred_len}-{save_doc_name}.jsonl"
+file_path1 = f"../data/entity_information/{data_name}/result_{doc_name}_{data_name}_entity_information_0-{docred_len}-type-nodeal.jsonl"
+jsonl_data1 = read_jsonl(file_path1)
 
-jsonl_data = read_jsonl(file_path)
 
+type_list = ['ORG', 'LOC', 'NUM', 'TIME', 'MISC', 'PER']
 
 save_list = []
 
+jsonl_data = []
+
+for data in jsonl_data1:
+    jsonl_data.append(data)
+
 start = 0
 length  = len(jsonl_data)
+print(length)
+cnt = 0
 
 for id in range(start, length):
-
+    print("----------------------------------------")
+    print(id)
     data = jsonl_data[id]
 
-    prompt_rel = data["prompt_rel"]
     prompt = data["prompt"]
     response = data["response"]
-    entity_h_id = data["entity_h_id"]
-    entity_t_id = data["entity_t_id"]
-    doc_id = data["doc_id"]
+    title = data["title"]
+    entity = data["entity"]
 
+    input_string = response
+    lines = input_string.split('\n')
+    results = []
+    for line in lines:
+        type_name = line.strip()
 
-    if "YES" in response:
+        if type_name not in type_list:
+            continue
+
         rel_dict = {}
-        rel_dict["title"] = get_doc_title(doc_id, docred_df)
-        rel_dict['h_idx'] = data["entity_h_id"]
-        rel_dict['t_idx'] = data["entity_t_id"]
-        rel_dict["r"] = reverse_rel_info[prompt_rel]
+        rel_dict["title"] = title
+        rel_dict["entity"] = entity
+        rel_dict["type"] = type_name
         save_list.append(rel_dict)
 
 unique_save_list = [dict(t) for t in {tuple(d.items()) for d in save_list}]
 
-save_name = f"../data/get_triplet_fact_judgement_label/{data_name}/{doc_name}_{data_name}_triplet_fact_judgement_0-{docred_len}_answer-{save_doc_name}.jsonl"
+
+save_name = f"../data/entity_information/{data_name}/result_{doc_name}_{data_name}_entity_information_0-{docred_len}-type.jsonl"
+
 save_to_jsonl(unique_save_list, save_name)
 print(f"The result is saved in the file {save_name}")
 print("-----------------------------------------------")

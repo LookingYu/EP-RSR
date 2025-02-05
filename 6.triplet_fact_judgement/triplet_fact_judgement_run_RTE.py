@@ -119,10 +119,10 @@ def run_list(prompt_list):
 
 
 data_name = "dev"
-doc_name = "docred"
+doc_name = "redocred"
 
-file_path = f"../data/triplet_fact_judgement_prompt/{data_name}/triplet_fact_judgement_prompt_{data_name}_k20-{doc_name}.jsonl"
-save_doc_name = f"k20-{doc_name}"
+file_path = f"../data/triplet_fact_judgement_prompt/{data_name}/triplet_fact_judgement_prompt_{data_name}_k20-RTE-{doc_name}.jsonl"
+save_doc_name = f"k20-RTE-{doc_name}"
 
 jsonl_data = read_jsonl(file_path)
 
@@ -132,7 +132,7 @@ print("data len：",len_data)
 print("----------------------------------")
 
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 
 fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = fr.read()

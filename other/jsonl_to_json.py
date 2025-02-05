@@ -49,22 +49,23 @@ def read_jsonl(file_path):
 
 data_name = "dev"
 
-doc_dir = '../data/docred/'
+doc_name = "docred"
+doc_dir = f'../data/{doc_name}/'
 doc_filename = f"{doc_dir}{data_name}.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-info_fr = open('../data/docred/rel_info.json', 'r', encoding='utf-8')
+info_fr = open(f'../data/{doc_name}/rel_info.json', 'r', encoding='utf-8')
 rel_info = info_fr.read()
 rel_info = eval(rel_info)
 
 reverse_rel_info = {v: k for k, v in rel_info.items()}
 
 
-save_doc_name = "k20"
-file_path = f"../data/get_triplet_fact_judgement_label/{data_name}/docred_{data_name}_triplet_fact_judgement_0-{docred_len}_answer-{save_doc_name}.jsonl"
+save_doc_name = f"k20-{doc_name}"
+file_path = f"../data/get_triplet_fact_judgement_label/{data_name}/{doc_name}_{data_name}_triplet_fact_judgement_0-{docred_len}_answer-{save_doc_name}.jsonl"
 jsonl_data = read_jsonl(file_path)
 
 save_list = []
@@ -73,7 +74,7 @@ for data in jsonl_data:
     save_list.append(data)
 
 
-with open(f'result/docred_{data_name}_ft_k20.json', 'w') as json_file:
+with open(f'result/{doc_name}_{data_name}_ft_k20.json', 'w') as json_file:
     json.dump(save_list, json_file)
 
 print("Data has been saved as a JSON file.")

@@ -3,9 +3,6 @@ import json
 import pandas as pd
 import numpy as np
 import json
-import requests
-import re
-import csv
 from datetime import datetime
 
 def save_to_jsonl(data, jsonl_file):
@@ -125,16 +122,11 @@ def run_list(prompt_list):
     return response_list_run
 
 
-
-now = datetime.now()
-formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
-print("The start time is:", formatted_time)
-
-
 data_name = "dev"
+doc_name = "docred"
 
-file_path = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}.jsonl"
-save_doc_name = "path-k20"
+file_path = f"../data/multiple_choice_prompt/{data_name}/multiple_choice_prompt-path-k20_{data_name}-{doc_name}.jsonl"
+save_doc_name = f"path-k20-{doc_name}"
 jsonl_data = read_jsonl(file_path)
 
 len_data = len(jsonl_data)
@@ -142,7 +134,8 @@ len_data = len(jsonl_data)
 print("data len：",len_data)
 print("----------------------------------")
 
-doc_dir = '../data/docred/'
+
+doc_dir = f'../data/{doc_name}/'
 doc_filename = f"{doc_dir}{data_name}.json"
 
 fr = open(doc_filename, 'r', encoding='utf-8')
@@ -185,7 +178,7 @@ for id in range(start, end):
         id_list.clear()
 
     if save_cnt == 200:
-        save_name = f"../data/multiple_choice_run/{data_name}/{save_doc_name}/result_docred_{data_name}_multiple_choice_{save_doc_name}_{save_id}.jsonl"
+        save_name = f"../data/multiple_choice_run/{data_name}/{save_doc_name}/result_{doc_name}_{data_name}_multiple_choice_{save_doc_name}_{save_id}.jsonl"
         save_to_jsonl(save_data_list, save_name)
         print(f"The result is saved in the file {save_name}")
         save_id += 1
@@ -212,16 +205,10 @@ if len(prompt_list) > 0:
     prompt_list.clear()
     id_list.clear()
 
-    save_name = f"../data/multiple_choice_run/{data_name}/{save_doc_name}/result_docred_{data_name}_multiple_choice_{save_doc_name}_{save_id}.jsonl"
+    save_name = f"../data/multiple_choice_run/{data_name}/{save_doc_name}/result_{doc_name}_{data_name}_multiple_choice_{save_doc_name}_{save_id}.jsonl"
     save_to_jsonl(save_data_list, save_name)
     print(f"The result is saved in the file {save_name}")
     save_id += 1
     save_cnt = 0
     save_data_list.clear()
-
-
-now = datetime.now()
-
-formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
-print("The end time is:", formatted_time)
 

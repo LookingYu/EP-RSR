@@ -3,9 +3,8 @@ import json
 import pandas as pd
 import numpy as np
 import json
-import requests
-import re
-import csv
+from datetime import datetime
+
 
 def save_to_jsonl(data, jsonl_file):
     with open(jsonl_file, 'w', encoding='utf-8') as jsonlfile:
@@ -27,7 +26,7 @@ def run_one(prompt):
     system_prompt = ""
     message = prompt_list
     temperature = 0.9
-    max_new_tokens = 50
+    max_new_tokens = 2048
     data = {}
     data["system_prompt"] = system_prompt
     data["message"] = message
@@ -68,7 +67,7 @@ def run_list(prompt_list):
     system_prompt = ""
     message = prompt_list
     temperature = 0.9
-    max_new_tokens = 50
+    max_new_tokens = 2048
 
     data = {}
     data["system_prompt"] = system_prompt
@@ -109,6 +108,7 @@ def run_list(prompt_list):
 
             result_response = result_response_2.replace("<|start_header_id|>assistant<|end_header_id|>", "", 1)
 
+
             result_response_unique = result_response.strip()
 
             response_list_run.append(result_response_unique)
@@ -116,28 +116,30 @@ def run_list(prompt_list):
     return response_list_run
 
 
-
 data_name = "dev"
+doc_name = "redocred"
 
-doc_dir = '../data/docred/'
-doc_filename = f"{doc_dir}{data_name}.json"
-fr = open(doc_filename, 'r', encoding='utf-8')
-json_info = fr.read()
-docred_df = pd.read_json(json_info)
-docred_len = len(docred_df)
+file_path = f"../data/entity_pair_selection_prompt/{data_name}/entity_pair_selection_prompt_{data_name}_01_RTE_{doc_name}.jsonl"
 
 
-file_path = f"../data/entity_information_prompt/{data_name}/prompt_docred_{data_name}_entity_information_doc0-{docred_len}.jsonl"
+save_doc_name = "01-RTE"
+
 jsonl_data = read_jsonl(file_path)
 
 len_data = len(jsonl_data)
 
 print("data len: ",len_data)
 print("----------------------------------")
+doc_dir = f'../data/{doc_name}/'
+doc_filename = f"{doc_dir}{data_name}_revised.json"
+
+fr = open(doc_filename, 'r', encoding='utf-8')
+json_info = fr.read()
+docred_df = pd.read_json(json_info)
+docred_len = len(docred_df)
 
 
-
-batch_size = 20
+batch_size = 5
 prompt_list = []
 response_list = []
 id_list = []
@@ -172,7 +174,7 @@ for id in range(start, end):
 
     if save_cnt == 200:
 
-        save_name = f"../data/entity_information_run/{data_name}/result_docred_{data_name}_entity_information_{save_id}.jsonl"
+        save_name = f"../data/entity_pair_selection_run/{data_name}/result_{doc_name}_{data_name}_entity_pair_selection-{save_doc_name}_{save_id}.jsonl"
         save_to_jsonl(save_data_list, save_name)
         print(f"The result is saved in the file {save_name}")
         save_id += 1
@@ -202,12 +204,10 @@ if len(prompt_list) > 0:
     prompt_list.clear()
     id_list.clear()
 
-    save_name = f"../data/entity_information_run/{data_name}/result_docred_{data_name}_entity_information_{save_id}.jsonl"
+    save_name = f"../data/entity_pair_selection_run/{data_name}/result_{doc_name}_{data_name}_entity_pair_selection-{save_doc_name}_{save_id}.jsonl"
     save_to_jsonl(save_data_list, save_name)
     print(f"The result is saved in the file {save_name}")
     save_id += 1
     save_cnt = 0
     save_data_list.clear()
-
-
 

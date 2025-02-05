@@ -6,7 +6,6 @@ import json
 def get_doc_title(doc_id, df):
 
     title = df['title'][doc_id]
-
     return title
 
 
@@ -51,9 +50,9 @@ def read_jsonl(file_path):
 
 data_name = "dev"
 
-doc_name = "docred"
+doc_name = "redocred"
 doc_dir = f'../data/{doc_name}/'
-doc_filename = f"{doc_dir}{data_name}.json"
+doc_filename = f"{doc_dir}{data_name}_revised.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
@@ -65,9 +64,10 @@ rel_info = eval(rel_info)
 
 reverse_rel_info = {v: k for k, v in rel_info.items()}
 
-save_doc_name = f"k20-{doc_name}"
+save_doc_name = f"path-k20-RTE-{doc_name}"
 
-file_path = f"../data/check_result_triplet_fact_judgement_jsonl/{data_name}/result_{doc_name}_{data_name}_triplet_fact_judgement_0-{docred_len}-{save_doc_name}.jsonl"
+file_path = f"../data/check_result_multiple_choice_jsonl/{data_name}/result_{doc_name}_{data_name}_multiple_choice_{save_doc_name}_0-{docred_len}.jsonl"
+
 
 jsonl_data = read_jsonl(file_path)
 
@@ -77,6 +77,8 @@ save_list = []
 start = 0
 length  = len(jsonl_data)
 
+
+
 for id in range(start, length):
 
     data = jsonl_data[id]
@@ -84,22 +86,39 @@ for id in range(start, length):
     prompt_rel = data["prompt_rel"]
     prompt = data["prompt"]
     response = data["response"]
-    entity_h_id = data["entity_h_id"]
-    entity_t_id = data["entity_t_id"]
+    entity_h_name = data["entity_h"]
+    entity_t_name = data["entity_t"]
     doc_id = data["doc_id"]
 
+    cnt = 0
+    len_rel = len(prompt_rel)
+    rel_list = []
+    limit = 0.0
+    for rel_id in range(len_rel):
+        rel = prompt_rel[rel_id]
+        op = chr(65 + cnt)
+        if op in response:
+            rel_list.append(rel)
+        cnt += 1
 
-    if "YES" in response:
-        rel_dict = {}
-        rel_dict["title"] = get_doc_title(doc_id, docred_df)
-        rel_dict['h_idx'] = data["entity_h_id"]
-        rel_dict['t_idx'] = data["entity_t_id"]
-        rel_dict["r"] = reverse_rel_info[prompt_rel]
-        save_list.append(rel_dict)
+
+    for rel in rel_list:
+        if rel != "no_relation":
+
+            if data["entity_h"] == data["entity_t"]:
+                continue
+
+            rel_dict = {}
+            rel_dict["title"]= get_doc_title(doc_id, docred_df)
+            rel_dict['h_name'] = data["entity_h"]
+            rel_dict['t_name'] = data["entity_t"]
+            rel_dict["r"] = reverse_rel_info[rel]
+            save_list.append(rel_dict)
+
 
 unique_save_list = [dict(t) for t in {tuple(d.items()) for d in save_list}]
 
-save_name = f"../data/get_triplet_fact_judgement_label/{data_name}/{doc_name}_{data_name}_triplet_fact_judgement_0-{docred_len}_answer-{save_doc_name}.jsonl"
+save_name = f"../data/get_multiple_choice_label/{data_name}/{doc_name}_{data_name}_multiple_choice_{save_doc_name}_0-{docred_len}_answer.jsonl"
 save_to_jsonl(unique_save_list, save_name)
 print(f"The result is saved in the file {save_name}")
 print("-----------------------------------------------")

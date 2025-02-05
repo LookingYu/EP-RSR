@@ -41,15 +41,15 @@ def judge_example(reverse_rel_info, tain_docred_df, title, rel, train_entity_h_i
 
 data_name = "dev"
 
-doc_name = "docred"
+doc_name = "redocred"
 doc_dir = f'../data/{doc_name}/'
-dev_doc_filename = f"{doc_dir}{data_name}.json"
+dev_doc_filename = f"{doc_dir}{data_name}_revised.json"
 dev_docred_fr = open(dev_doc_filename, 'r', encoding='utf-8')
 dev_json_info = dev_docred_fr.read()
 dev_docred_df = pd.read_json(dev_json_info)
 dev_docred_len = len(dev_docred_df)
 
-train_doc_filename = f"../data/{doc_name}/train_annotated.json"
+train_doc_filename = f"../data/{doc_name}/train_revised.json"
 train_docred_fr = open(train_doc_filename, 'r', encoding='utf-8')
 train_json_info = train_docred_fr.read()
 train_docred_df = pd.read_json(train_json_info)
@@ -62,23 +62,22 @@ rel_info = eval(rel_info)
 reverse_rel_info = {v: k for k, v in rel_info.items()}
 
 
-train_file_path = f"../data/check_result_relation_summary_jsonl/train_annotated/result_{doc_name}_train_annotated_relation_summary_0-3053.jsonl"
+train_file_path = f"../data/check_result_relation_summary_jsonl/train/result_{doc_name}_train_relation_summary_0-3053.jsonl"
 train_annotated_jsonl_data = read_jsonl(train_file_path)
 
-
-dev_file_path = f"../data/check_result_relation_summary_jsonl/{data_name}/result_{doc_name}_{data_name}_relation_summary_0-{dev_docred_len}.jsonl"
+dev_file_path = f"../data/check_result_relation_summary_jsonl/{data_name}/result_{doc_name}_{data_name}_relation_summary_0-{dev_docred_len}-RTE.jsonl"
 dev_jsonl_data = read_jsonl(dev_file_path)
 
 print("data loading successful")
 print('--------------------------------------')
 
-train_embeddings = np.load(f'../data/get_embeddings/{doc_name}_train_annotated_embeddings_0-3053.npy')
+train_embeddings = np.load(f'../data/get_embeddings/{doc_name}_train_embeddings_0-3053.npy')
 print("train_embeddings loading successful")
 print('--------------------------------------')
 
 
-dev_embeddings = np.load(f'../data/get_embeddings/{doc_name}_{data_name}_embeddings_0-{dev_docred_len}.npy')
-print("dev_embeddings loading successful")
+dev_embeddings = np.load(f'../data/get_embeddings/{doc_name}_{data_name}_embeddings_0-{dev_docred_len}-RTE.npy')
+print(f"{data_name}_embeddings loading successful")
 print('--------------------------------------')
 
 dev_len = len(dev_jsonl_data)
@@ -97,22 +96,22 @@ print("data len:", dev_len)
 for id in range(dev_len):
     print(id)
     query_sentence = dev_jsonl_data[id]['entities_description']
-    entity_h_id = dev_jsonl_data[id]["entity_h_id"]
-    entity_t_id = dev_jsonl_data[id]["entity_t_id"]
+    entity_h_name = dev_jsonl_data[id]["entity_h"]
+    entity_t_name = dev_jsonl_data[id]["entity_t"]
     dev_title = dev_jsonl_data[id]['title']
 
     if dev_title not in dev_top_all:
         dev_top_all[dev_title] = {}
 
-    if entity_h_id not in dev_top_all[dev_title]:
-        dev_top_all[dev_title][entity_h_id] = {}
-    if entity_t_id not in dev_top_all[dev_title][entity_h_id]:
-        dev_top_all[dev_title][entity_h_id][entity_t_id] = []
+    if entity_h_name not in dev_top_all[dev_title]:
+        dev_top_all[dev_title][entity_h_name] = {}
+    if entity_t_name not in dev_top_all[dev_title][entity_h_name]:
+        dev_top_all[dev_title][entity_h_name][entity_t_name] = []
 
-    if entity_t_id not in dev_top_all[dev_title]:
-        dev_top_all[dev_title][entity_t_id] = {}
-    if entity_h_id not in dev_top_all[dev_title][entity_t_id]:
-        dev_top_all[dev_title][entity_t_id][entity_h_id] = []
+    if entity_t_name not in dev_top_all[dev_title]:
+        dev_top_all[dev_title][entity_t_name] = {}
+    if entity_h_name not in dev_top_all[dev_title][entity_t_name]:
+        dev_top_all[dev_title][entity_t_name][entity_h_name] = []
 
 
     query_embedding = dev_embeddings[id]
@@ -146,8 +145,8 @@ for id in range(dev_len):
                 data_dict['entity_h_id'] = train_annotated_jsonl_data[train_id]['entity_t_id']
                 data_dict['entity_t_id'] = train_annotated_jsonl_data[train_id]['entity_h_id']
 
-            dev_top_all[dev_title][entity_h_id][entity_t_id].append(data_dict)
-            dev_top_all[dev_title][entity_t_id][entity_h_id].append(data_dict)
+            dev_top_all[dev_title][entity_h_name][entity_t_name].append(data_dict)
+            dev_top_all[dev_title][entity_t_name][entity_h_name].append(data_dict)
 
 
         cnt += 1
@@ -221,12 +220,12 @@ for key, value in dev_result_rel.items():
 save_list = []
 
 for data in dev_jsonl_data:
-    entity_h_id = data["entity_h_id"]
-    entity_t_id = data["entity_t_id"]
+    entity_h_name = data["entity_h"]
+    entity_t_name = data["entity_t"]
     dev_title = data['title']
     data_1 = data
     data_2 = []
-    label_list = save_result_rel[dev_title][entity_h_id][entity_t_id]
+    label_list = save_result_rel[dev_title][entity_h_name][entity_t_name]
     for label, value in label_list:
         data_2.append((label, value))
     save_data = []
@@ -234,6 +233,6 @@ for data in dev_jsonl_data:
     save_data.append(data_2)
     save_list.append(save_data)
 
-save_name = f"../data/retrieval_from_train/{data_name}/path-k20-{doc_name}.jsonl"
+save_name = f"../data/retrieval_from_train/{data_name}/path-k20-RTE-{doc_name}.jsonl"
 save_to_jsonl(save_list, save_name)
 print(f"The result is saved in the file {save_name}")

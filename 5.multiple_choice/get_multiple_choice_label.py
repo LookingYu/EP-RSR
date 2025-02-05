@@ -50,22 +50,23 @@ def read_jsonl(file_path):
 
 data_name = "dev"
 
-doc_dir = '../data/docred/'
+doc_name = "docred"
+doc_dir = f'../data/{doc_name}/'
 doc_filename = f"{doc_dir}{data_name}.json"
 docred_fr = open(doc_filename, 'r', encoding='utf-8')
 json_info = docred_fr.read()
 docred_df = pd.read_json(json_info)
 docred_len = len(docred_df)
 
-info_fr = open('../data/docred/rel_info.json', 'r', encoding='utf-8')
+info_fr = open(f'../data/{doc_name}/rel_info.json', 'r', encoding='utf-8')
 rel_info = info_fr.read()
 rel_info = eval(rel_info)
 
 reverse_rel_info = {v: k for k, v in rel_info.items()}
 
-save_doc_name = "path-k20"
+save_doc_name = f"path-k20-{doc_name}"
 
-file_path = f"../data/check_result_multiple_choice_jsonl/{data_name}/result_docred_{data_name}_multiple_choice_{save_doc_name}_0-{docred_len}.jsonl"
+file_path = f"../data/check_result_multiple_choice_jsonl/{data_name}/result_{doc_name}_{data_name}_multiple_choice_{save_doc_name}_0-{docred_len}.jsonl"
 
 
 
@@ -114,7 +115,7 @@ for id in range(start, length):
 
 unique_save_list = [dict(t) for t in {tuple(d.items()) for d in save_list}]
 
-save_name = f"../data/get_multiple_choice_label/{data_name}/docred_{data_name}_multiple_choice_{save_doc_name}_0-{docred_len}_answer.jsonl"
+save_name = f"../data/get_multiple_choice_label/{data_name}/{doc_name}_{data_name}_multiple_choice_{save_doc_name}_0-{docred_len}_answer.jsonl"
 save_to_jsonl(unique_save_list, save_name)
 print(f"The result is saved in the file {save_name}")
 print("-----------------------------------------------")
